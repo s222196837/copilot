@@ -1,0 +1,7 @@
+*.o
+.qmake.stash
+Makefile
+copilot
+main.moc
+moc_predefs.h
+qrc_qml.cpp
