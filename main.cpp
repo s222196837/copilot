@@ -58,7 +58,6 @@
 #include <QFontDatabase>
 #include <QEasingCurve>
 #include <QGeoCoordinate>
-#include <QtPositioning/private/qwebmercator_p.h>
 
 #define ANIMATION_DURATION 4000
 
@@ -163,6 +162,7 @@ private:
     //! [C++Pilot3]
     void updatePosition()
     {
+#if 0
         // simple progress animation
         qreal progress;
         QTime current = QTime::currentTime();
@@ -178,6 +178,7 @@ private:
 
         if (!timer.isActive())
             emit arrived();
+#endif
     }
     //! [C++Pilot3]
 

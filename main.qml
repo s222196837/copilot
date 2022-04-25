@@ -1,9 +1,9 @@
+
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
-import QtQuick.Layouts 1.0
-import QtLocation 5.6
+import QtQuick.Layouts 1.15
+import QtLocation 5.15
 
 ApplicationWindow {
     id: window

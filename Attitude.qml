@@ -1,8 +1,6 @@
 
-import QtQuick 2.0
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.0
-import QtGraphicalEffects 1.0
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 Item {
     property var baseColor: "#4b4b4b"
@@ -11,7 +9,6 @@ Item {
     property var size: 164
   
     Button {
-	style: ButtonStyle {
 	    background: Rectangle {
 		id: background
 		color: baseColor
@@ -57,6 +54,5 @@ Item {
 		    width: size
 		}
 	    }
-	}
     }
 }
