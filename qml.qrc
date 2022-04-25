@@ -4,6 +4,7 @@
 	<file>copilot.qml</file>
 	<file>Plane.qml</file>
 	<file>Altimeter.qml</file>
+	<file>Airspeed.qml</file>
 	<file>Attitude.qml</file>
 	<file>VerticalSpeed.qml</file>
 	<file>qtquickcontrols2.conf</file>
@@ -20,6 +21,10 @@
 	<file>images/alt/alt_face_3.svg</file>
 	<file>images/alt/alt_hand_1.svg</file>
 	<file>images/alt/alt_hand_2.svg</file>
+	<file>images/asi/asi.svg</file>
+	<file>images/asi/asi_case.svg</file>
+	<file>images/asi/asi_face.svg</file>
+	<file>images/asi/asi_hand.svg</file>
 	<file>images/vsi/vsi.svg</file>
 	<file>images/vsi/vsi_case.svg</file>
 	<file>images/vsi/vsi_face.svg</file>
