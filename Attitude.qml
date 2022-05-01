@@ -97,7 +97,7 @@ Item {
 	onTriggered: {
 	    // rotate (roll)
 	    roll += (1.0 * rollDirection);
-	    if (rollDirection <= 0.0 || rollDirection >= 360.0) {
+	    if (roll <= 0.0 || roll >= 360.0) {
 		rollDirection *= -1.0;
 	    }
 
