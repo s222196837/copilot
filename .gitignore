@@ -3,5 +3,5 @@
 Makefile
 copilot
 main.moc
-moc_predefs.h
+moc_*.*
 qrc_qml.cpp

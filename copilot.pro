@@ -1,8 +1,16 @@
 TEMPLATE = app
 TARGET = copilot
-QT += qml quick positioning location
+QT += qml quick positioning location network
+requires(qtConfig(udpsocket))
 
-SOURCES += main.cpp
+SOURCES += \
+	main.cpp \
+	transponder.cpp \
+	# END SOURCES
+
+HEADERS += \
+	transponder.h \
+	# END HEADERS
 
 RESOURCES += qml.qrc
 
