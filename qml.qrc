@@ -3,6 +3,7 @@
 	<file>main.qml</file>
 	<file>copilot.qml</file>
 	<file>Plane.qml</file>
+	<file>Battery.qml</file>
 	<file>Altimeter.qml</file>
 	<file>Airspeed.qml</file>
 	<file>Attitude.qml</file>

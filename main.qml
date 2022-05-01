@@ -1,4 +1,3 @@
-
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
@@ -35,13 +34,11 @@ ApplicationWindow {
             anchors.centerIn: parent
         }
 
-        Label {
+	Battery {
 	    id: batteryStatus
-	    anchors.verticalCenter: parent.verticalCenter
 	    anchors.right: parent.right
-	    text: "\uF242   " // battery-half
-	    font.family: "fontello"
-        }
+	    anchors.verticalCenter: parent.verticalCenter
+	}
     }
 
     footer: ToolBar {
@@ -52,7 +49,6 @@ ApplicationWindow {
 
         RowLayout {
 	    id: instrumentsLayout
-            /*anchors.fill: parent*/
 	    spacing: 0
 
 	    Rectangle {
@@ -127,40 +123,6 @@ ApplicationWindow {
             }
         }
     }
-
-/*
-    Drawer {
-        id: instruments
-	edge: Qt.BottomEdge
-        height: 160
-	y: window.height - height
-        width: window.width
-	interactive: true
-	position: 1.0
-	opacity: 0.2
-	visible: true
-
-        Column {
-            anchors.fill: parent
-            ItemDelegate {
-                text: qsTr("Instruments")
-                width: parent.width
-                onClicked: {
-                    stackView.push("instruments.ui.qml")
-                    drawer.close()
-                }
-            }
-            ItemDelegate {
-                text: qsTr("Settings")
-                width: parent.width
-                onClicked: {
-                    stackView.push("settings.ui.qml")
-                    drawer.close()
-                }
-            }
-        }
-    }
-*/
 
     StackView {
         id: stackView

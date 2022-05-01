@@ -1,4 +1,3 @@
-
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtPositioning 5.15
@@ -158,11 +157,13 @@ Page {
         width: text.width * 1.3
         height: text.height * 1.3
         radius: 5
+
         Text {
             id: text
             anchors.centerIn: parent
-            text: qsTr("Hit the plane to start the flight!")
+            text: qsTr("Welcome!")
         }
+
 
         Timer {
             interval: 5000; running: true; repeat: false;
