@@ -23,7 +23,6 @@ Item {
 
 	    Image {
 		id: alt_case
-		visible: true
 		source: "qrc:/images/alt/alt_case.svg"
 		height: length
 		width: length
@@ -32,7 +31,6 @@ Item {
 
 	    Image {
 		id: alt_face_1
-		visible: true
 		source: "qrc:/images/alt/alt_face_1.svg"
 		height: length
 		width: length
@@ -47,7 +45,6 @@ Item {
 
 	    Image {
 		id: alt_face_2
-		visible: true
 		source: "qrc:/images/alt/alt_face_2.svg"
 		height: length
 		width: length
@@ -56,7 +53,6 @@ Item {
 
 	    Image {
 		id: alt_face_3
-		visible: true
 		source: "qrc:/images/alt/alt_face_3.svg"
 		height: length
 		width: length
@@ -71,7 +67,6 @@ Item {
 
 	    Image {
 		id: alt_hand_1
-		visible: true
 		source: "qrc:/images/alt/alt_hand_1.svg"
 		height: length
 		width: length
@@ -86,7 +81,6 @@ Item {
 
 	    Image {
 		id: alt_hand_2
-		visible: true
 		source: "qrc:/images/alt/alt_hand_2.svg"
 		height: length
 		width: length

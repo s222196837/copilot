@@ -19,7 +19,6 @@ Item {
 
 	    Image {
 		id: vsi_case
-		visible: true
 		source: "qrc:/images/vsi/vsi_case.svg"
 		height: length
 		width: length
@@ -28,7 +27,6 @@ Item {
 
 	    Image {
 		id: vsi_face
-		visible: true
 		source: "qrc:/images/vsi/vsi_face.svg"
 		height: length
 		width: length
@@ -37,7 +35,6 @@ Item {
 
 	    Image {
 		id: vsi_hand
-		visible: true
 		source: "qrc:/images/vsi/vsi_hand.svg"
 		height: length
 		width: length

@@ -23,7 +23,6 @@ Item {
 
 	    Image {
 		id: ai_back
-		visible: true
 		source: "qrc:/images/ai/ai_back.svg"
 		height: length
 		width: length
@@ -38,7 +37,6 @@ Item {
 
 	    Image {
 		id: ai_face
-		visible: true
 		source: "qrc:/images/ai/ai_face.svg"
 		height: length
 		width: length
@@ -59,7 +57,6 @@ Item {
 
 	    Image {
 		id: ai_ring
-		visible: true
 		source: "qrc:/images/ai/ai_ring.svg"
 		height: length
 		width: length
@@ -74,7 +71,6 @@ Item {
 
 	    Image {
 		id: ai_case
-		visible: true
 		source: "qrc:/images/ai/ai_case.svg"
 		height: length
 		width: length
