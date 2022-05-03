@@ -1,6 +1,3 @@
-#include <QUuid>
-#include <QtEndian>
-#include <QtNetwork>
 #include <sys/time.h>
 #include "transponder.h"
 
@@ -70,58 +67,102 @@ Transponder::processPendingDatagrams(void)
     while (udpSocket4.hasPendingDatagrams()) {
 	datagram.resize(int(udpSocket4.pendingDatagramSize()));
 	size = udpSocket4.readDatagram(datagram.data(), datagram.size());
-	    decodeFlyingObject(datagram.constData(), size);
+	    decodeFlyingObject(datagram, size);
     }
 
     while (udpSocket6.hasPendingDatagrams()) {
 	datagram.resize(int(udpSocket6.pendingDatagramSize()));
 	size = udpSocket6.readDatagram(datagram.data(), datagram.size());
-	decodeFlyingObject(datagram.constData(), size);
+	decodeFlyingObject(datagram, size);
     }
 }
 
 void
-Transponder::decodeFlyingObject(const char *message, size_t length)
+Transponder::decodeFlyingObject(QByteArray &message, size_t length)
 {
-    FlyingObject *tmp, *ufo = (struct FlyingObject *)message;
+    FlyingObject *tmp, *ufo = (struct FlyingObject *)message.constData();
     static FlyingObject *object;
-    static size_t objectSize;
+    static size_t size;
 
     if (length > 0)
 	recvCount++;
     else
 	recvErrors++;
 
-    if (length < sizeof(FlyingObject) ||
-	length != ufo->length1 || length != ufo->length2 ||
-	memcmp(ufo->magic, "UFOP", 4) != 0) {
+    if (length < sizeof(FlyingObject)) {
+	fprintf(stderr, "Bad UFO packet length received: %zu < %zu\n",
+		length, sizeof(FlyingObject));
 	recvCorrupt++;
-    } else {
-	// Highwater-mark allocated object to reduce frequent allocations
-	// of same or similar-sized buffers on receipt of these messages.
-	if (length > objectSize) {
-	    if ((tmp = (FlyingObject *)realloc(object, length)) == NULL)
-		return;
-	    object = tmp;
-	    objectSize = length;
-	}
-	// Encode all numbers from little-endian form, copy out strings
-	memcpy(object->magic, "UFOP", 4);
-	memcpy(object->identity, identity.constData(), length-sizeof(FlyingObject));
-	memcpy(object->senderUUID, ufo->senderUUID, sizeof(object->senderUUID));
-	object->length1 = qFromLittleEndian(ufo->length1);
-	object->timestamp = qFromLittleEndian(ufo->timestamp);
-	object->identityLength = qFromLittleEndian(ufo->identityLength);
-	object->latitudeDegrees = qFromLittleEndian(ufo->latitudeDegrees);
-	object->latitudeMinutes = qFromLittleEndian(ufo->latitudeMinutes);
-	object->longitudeDegrees = qFromLittleEndian(ufo->longitudeDegrees);
-	object->longitudeMinutes = qFromLittleEndian(ufo->longitudeMinutes);
-	object->groundSpeed = qFromLittleEndian(ufo->groundSpeed);
-	object->altitude = qFromLittleEndian(ufo->altitude);
-	object->length2 = qFromLittleEndian(ufo->length2);
-
-	emit updateFlyingObject(object);
+	return;
     }
+    if (memcmp(ufo->magic, "UFOP", 4) != 0) {
+	fprintf(stderr, "Bad UFO packet magic received: %c%c%c%c\n",
+		ufo->magic[0], ufo->magic[1], ufo->magic[2], ufo->magic[3]);
+	recvCorrupt++;
+	return;
+    }
+
+    // Highwater-mark allocated object to reduce frequent allocations
+    // of same or similar-sized buffers on receipt of these messages.
+    if (length > size) {
+	if ((tmp = (FlyingObject *)realloc(object, length)) == NULL)
+	    return;
+	object = tmp;
+	size = length;
+    }
+
+    // Encode all numbers from little-endian form, copy out strings
+    object->length1 = qFromLittleEndian(ufo->length1);
+    object->timestamp = qFromLittleEndian(ufo->timestamp);
+    object->identityLength = qFromLittleEndian(ufo->identityLength);
+    object->latitudeDegrees = qFromLittleEndian(ufo->latitudeDegrees);
+    object->latitudeMinutes = qFromLittleEndian(ufo->latitudeMinutes);
+    object->longitudeDegrees = qFromLittleEndian(ufo->longitudeDegrees);
+    object->longitudeMinutes = qFromLittleEndian(ufo->longitudeMinutes);
+    object->groundSpeed = qFromLittleEndian(ufo->groundSpeed);
+    object->altitude = qFromLittleEndian(ufo->altitude);
+    object->length2 = qFromLittleEndian(ufo->length2);
+    // Before copying any strings, double check all lengths received
+    if (ufo->length1 != ufo->length2 ||
+	ufo->length1 != length - sizeof(FlyingObject)) {
+	fprintf(stderr, "Bad UFO packet length received: %u/%u vs %zu\n",
+		ufo->length1, ufo->length2, length - sizeof(FlyingObject));
+	recvCorrupt++;
+	return;
+    }
+    // Finally check null termination on the identity string as well
+    if (ufo->identity[length - sizeof(FlyingObject)] != '\0') {
+	fprintf(stderr, "Bad UFO packet identity terminal (%c)\n",
+		ufo->identity[length - sizeof(FlyingObject)]);
+	recvCorrupt++;
+	return;
+    }
+
+    memcpy(object->identity, ufo->identity, length - sizeof(FlyingObject));
+    memcpy(object->senderUUID, ufo->senderUUID, sizeof(object->senderUUID));
+
+    QUuid uuid;
+    uuid.fromRfc4122(message + offsetof(FlyingObject, senderUUID));
+    QByteArray bytes(message + offsetof(FlyingObject, identity));
+    QString sender(bytes);
+
+#ifdef DEBUG
+	fprintf(stderr, "[%s] time=%lldms ID=%s\n"
+			"latitude: %d %f longitude=%d %f\n"
+			"heading=%u speed=%f altitude=%u\n",
+			(const char *) uuid.toString().constData(),
+			(long long) object->timestamp,
+			(const char *) sender.constData(),
+			object->latitudeDegrees, object->latitudeMinutes,
+			object->longitudeDegrees, object->longitudeMinutes,
+			object->heading, object->groundSpeed, object->altitude);
+#endif
+
+    emit updateFlyingObject(uuid, sender, object->timestamp, 
+			    object->latitudeDegrees, object->latitudeMinutes,
+			    object->heading,
+			    object->longitudeDegrees, object->longitudeMinutes,
+			    object->groundSpeed, object->altitude);
 }
 
 int
@@ -212,5 +253,6 @@ Transponder::encodeFlyingObject(void)
     qToLittleEndian(myself.longitudeMinutes, &out->longitudeMinutes);
     qToLittleEndian(myself.groundSpeed, &out->groundSpeed);
     qToLittleEndian(myself.altitude, &out->altitude);
+    qToLittleEndian(myself.heading, &out->heading);
     qToLittleEndian(myself.length2, &out->length2);
 }

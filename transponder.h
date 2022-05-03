@@ -35,13 +35,14 @@ public:
 
 public slots:
     int setIdentity(QString &identity);
-    int setAltitude(unsigned int altityde);
+    int setAltitude(unsigned int altitude);
     int setLongitude(bool south, unsigned int degrees, float minutes);
     int setLatitude(bool west, unsigned int degrees, float minutes);
     int setHeading(unsigned int degrees, float speed);
 
 signals:
-    void updateFlyingObject(const FlyingObject *);
+    void updateFlyingObject(QUuid, QString, quint64, qint16, float,
+			    quint16, qint16, float, float, quint32);
 
 private slots:
     void setTimeToLive(int newTtl);
@@ -50,7 +51,7 @@ private slots:
     void processPendingDatagrams(void);
 
 private:
-    void decodeFlyingObject(const char *, size_t);
+    void decodeFlyingObject(QByteArray&, size_t);
     void encodeFlyingObject(void);
 
     QHostAddress groupAddress4;
