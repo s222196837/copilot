@@ -4,12 +4,15 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtLocation 5.15
 
+
 ApplicationWindow {
+    property var copilot: "COPILOT"
+
     id: window
     height: 700
     width: 500
     visible: true
-    title: qsTr(" ")
+    title: copilot
 
     property var dashColor: "#4b4b4b"
 
@@ -30,7 +33,8 @@ ApplicationWindow {
         }
 
         Label {
-            text: stackView.currentItem.title
+	    id: mainHeading
+	    text: copilot + "  -  " + Qt.formatTime(new Date(), "h:mm AP")
             anchors.centerIn: parent
         }
 
@@ -106,18 +110,26 @@ ApplicationWindow {
             anchors.fill: parent
 
             ItemDelegate {
-                text: qsTr("Instruments")
-                width: parent.width
-                onClicked: {
-                    stackView.push("instruments.ui.qml")
-                    drawer.close()
-                }
-            }
-            ItemDelegate {
                 text: qsTr("Settings")
                 width: parent.width
                 onClicked: {
                     stackView.push("settings.ui.qml")
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: qsTr("Flight Tracking")
+                width: parent.width
+                onClicked: {
+                    stackView.push("tracking.ui.qml")
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: qsTr("Collision Detection")
+                width: parent.width
+                onClicked: {
+                    stackView.push("collisions.ui.qml")
                     drawer.close()
                 }
             }
@@ -128,5 +140,16 @@ ApplicationWindow {
         id: stackView
         initialItem: "copilot.qml"
         anchors.fill: parent
+    }
+
+    Timer {
+	interval: 10000	// every 10 seconds
+	running: true
+	repeat: true
+
+	onTriggered: {
+	    // h:mm:ss AP - for updating display containing seconds as well
+	    mainHeading.text = copilot + "  -  " + Qt.formatTime(new Date(), "h:mm AP")
+	}
     }
 }

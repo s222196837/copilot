@@ -7,12 +7,22 @@ Page {
     height: 700
     width: 500
     visible: true
-    title: qsTr("COPILOT")
+    title: "COPILOT"
 
-    property variant topLeftEurope: QtPositioning.coordinate(60.5, 0.0)
-    property variant bottomRightEurope: QtPositioning.coordinate(51.0, 14.0)
-    property variant viewOfEurope:
-            QtPositioning.rectangle(topLeftEurope, bottomRightEurope)
+    property variant torquay: QtPositioning.coordinate(-38.342647,144.319029)
+    property variant winkipop: QtPositioning.coordinate(-38.365793,144.285479)
+    property variant spionkop: QtPositioning.coordinate(-38.468168,144.069488)
+
+    property variant viewPoint: torquay
+    property variant viewPort: QtPositioning.rectangle(viewPoint, 0.008, 0.08)
+
+    //property variant topLeft: QtPositioning.coordinate(-38.439028,144.029164)
+    //property variant bottomRight: QtPositioning.coordinate(-38.496956,144.108478)
+    //property variant viewPort: QtPositioning.rectangle(topLeft, bottomRight)
+    //property variant topLeftEurope: QtPositioning.coordinate(60.5, 0.0)
+    //property variant bottomRightEurope: QtPositioning.coordinate(51.0, 14.0)
+    //property variant viewPort:
+    //        QtPositioning.rectangle(topLeftEurope, bottomRightEurope)
 
     property variant berlin: QtPositioning.coordinate(52.5175, 13.384)
     property variant oslo: QtPositioning.coordinate(59.9154, 10.7425)
@@ -23,7 +33,7 @@ Page {
         anchors.centerIn: parent;
         anchors.fill: parent
         plugin: Plugin {
-            name: "osm" // "mapboxgl", "esri", ...
+            name: "mapboxgl" // "osm", "mapboxgl", "esri", ...
         }
 
         Plane {
@@ -146,7 +156,7 @@ Page {
         }
         //! [CppPlane2]
 
-        visibleRegion: viewOfEurope
+        visibleRegion: viewPort
     }
 
     Rectangle {
