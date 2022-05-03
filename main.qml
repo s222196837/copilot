@@ -7,14 +7,17 @@ import QtLocation 5.15
 
 ApplicationWindow {
     property var copilot: "COPILOT"
+    property var dashColor: "#4b4b4b"
 
     id: window
     height: 700
     width: 500
+    maximumHeight: height
+    minimumHeight: height
+    maximumWidth: width
+    minimumWidth: width
+    title: qsTr(" ")
     visible: true
-    title: copilot
-
-    property var dashColor: "#4b4b4b"
 
     header: ToolBar {
         contentHeight: toolButton.implicitHeight
@@ -110,10 +113,26 @@ ApplicationWindow {
             anchors.fill: parent
 
             ItemDelegate {
+                text: qsTr("Pilot")
+                width: parent.width
+                onClicked: {
+                    stackView.push("Pilot.qml")
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: qsTr("Aircraft")
+                width: parent.width
+                onClicked: {
+                    stackView.push("Aircraft.qml")
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
                 text: qsTr("Settings")
                 width: parent.width
                 onClicked: {
-                    stackView.push("settings.ui.qml")
+                    stackView.push("Settings.qml")
                     drawer.close()
                 }
             }
@@ -121,7 +140,7 @@ ApplicationWindow {
                 text: qsTr("Flight Tracking")
                 width: parent.width
                 onClicked: {
-                    stackView.push("tracking.ui.qml")
+                    stackView.push("Tracking.qml")
                     drawer.close()
                 }
             }
@@ -129,7 +148,7 @@ ApplicationWindow {
                 text: qsTr("Collision Detection")
                 width: parent.width
                 onClicked: {
-                    stackView.push("collisions.ui.qml")
+                    stackView.push("Collisions.qml")
                     drawer.close()
                 }
             }

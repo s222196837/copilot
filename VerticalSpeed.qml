@@ -8,7 +8,7 @@ Item {
     property var middle: length / 2
 
     property var climbRate: 0.0
-    property var testPattern: false
+    property var testPattern: true
     property var climbRateAngle : 0.0
   
     Button {

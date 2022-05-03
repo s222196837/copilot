@@ -9,7 +9,7 @@ Item {
 
     property var roll: 0.0
     property var pitch: 0.0
-    property var testPattern: false
+    property var testPattern: true
     property var faceDeltaX_new: 0.0
     property var faceDeltaX_old: 0.0
     property var faceDeltaY_new: 0.0

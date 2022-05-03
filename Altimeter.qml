@@ -9,7 +9,7 @@ Item {
 
     property var altitude: 0.0
     property var pressure: 28.0
-    property var testPattern: false
+    property var testPattern: true
     property var angleHand1: 0.0
     property var angleHand2: 0.0
     property var angleFace1: 0.0
