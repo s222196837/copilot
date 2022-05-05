@@ -20,7 +20,7 @@ MapQuickItem {
             Image {
                 id: image
                 rotation: bearing
-                source: "qrc:/images/aircraft.png"
+                source: "qrc:/images/pointer.png"
             }
             Rectangle {
                 id: bubble

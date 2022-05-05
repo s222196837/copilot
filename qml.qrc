@@ -13,7 +13,11 @@
         <file>Settings.qml</file>
         <file>Tracking.qml</file>
 	<file>VerticalSpeed.qml</file>
-	<file>images/aircraft.png</file>
+	<file>images/pointer.png</file>
+	<file>images/pointer0.png</file>
+	<file>images/pointer1.png</file>
+	<file>images/pointer2.png</file>
+	<file>images/pointer3.png</file>
 	<file>images/ai/ai.svg</file>
 	<file>images/ai/ai_back.svg</file>
 	<file>images/ai/ai_case.svg</file>
