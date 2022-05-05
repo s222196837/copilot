@@ -7,9 +7,9 @@
 	<file>Aircraft.qml</file>
 	<file>Attitude.qml</file>
 	<file>Battery.qml</file>
-        <file>Collisions.qml</file>
 	<file>Pilot.qml</file>
 	<file>Plane.qml</file>
+        <file>Proximity.qml</file>
         <file>Settings.qml</file>
         <file>Tracking.qml</file>
 	<file>VerticalSpeed.qml</file>

@@ -137,18 +137,18 @@ ApplicationWindow {
                 }
             }
             ItemDelegate {
-                text: qsTr("Flight Tracking")
+                text: qsTr("Proximity")
                 width: parent.width
                 onClicked: {
-                    stackView.push("Tracking.qml")
+                    stackView.push("Proximity.qml")
                     drawer.close()
                 }
             }
             ItemDelegate {
-                text: qsTr("Collision Detection")
+                text: qsTr("Flight Tracking")
                 width: parent.width
                 onClicked: {
-                    stackView.push("Collisions.qml")
+                    stackView.push("Tracking.qml")
                     drawer.close()
                 }
             }

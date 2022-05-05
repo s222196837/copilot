@@ -52,7 +52,6 @@ Rectangle {
                 TextField {
                     id: authenticationKey
                     width: parent.width
-                    placeholderText: "Digits only field"
                     inputMethodHints: Qt.ImhDigitsOnly | Qt.ImhLowercaseOnly | Qt.ImhUppercaseOnly
                     onAccepted: trackingUrl.focus = true
                 }
