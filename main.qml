@@ -8,6 +8,10 @@ import QtLocation 5.15
 ApplicationWindow {
     property var copilot: "COPILOT"
     property var dashColor: "#4b4b4b"
+    property var tempValue: 22
+    property var tempUnits: "C"
+    property var sep: "   -   "
+    property var end: "       "
 
     id: window
     height: 700
@@ -18,6 +22,12 @@ ApplicationWindow {
     minimumWidth: width
     title: qsTr(" ")
     visible: true
+
+    function environment() {
+	// h:mm:ss AP - display updates contain seconds as well
+	return Qt.formatTime(new Date(), "h:mm AP") + ", "
+		+ tempValue + "<sup>o</sup>" + tempUnits;
+    }
 
     header: ToolBar {
         contentHeight: toolButton.implicitHeight
@@ -37,12 +47,13 @@ ApplicationWindow {
 
         Label {
 	    id: mainHeading
-	    text: copilot + "  -  " + Qt.formatTime(new Date(), "h:mm AP")
+	    textFormat: Text.RichText
+	    text: copilot + sep + environment() + end
             anchors.centerIn: parent
         }
 
-	Battery {
-	    id: batteryStatus
+	Status {
+	    id: statusBar
 	    anchors.right: parent.right
 	    anchors.verticalCenter: parent.verticalCenter
 	}
@@ -167,8 +178,7 @@ ApplicationWindow {
 	repeat: true
 
 	onTriggered: {
-	    // h:mm:ss AP - for updating display containing seconds as well
-	    mainHeading.text = copilot + "  -  " + Qt.formatTime(new Date(), "h:mm AP")
+	    mainHeading.text = copilot + sep + environment() + end;
 	}
     }
 }

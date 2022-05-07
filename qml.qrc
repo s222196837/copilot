@@ -6,11 +6,11 @@
 	<file>Airspeed.qml</file>
 	<file>Aircraft.qml</file>
 	<file>Attitude.qml</file>
-	<file>Battery.qml</file>
 	<file>Pilot.qml</file>
 	<file>Plane.qml</file>
         <file>Proximity.qml</file>
         <file>Settings.qml</file>
+	<file>Status.qml</file>
         <file>Tracking.qml</file>
 	<file>VerticalSpeed.qml</file>
 	<file>images/pointer.png</file>
@@ -38,7 +38,7 @@
 	<file>images/vsi/vsi_case.svg</file>
 	<file>images/vsi/vsi_face.svg</file>
 	<file>images/vsi/vsi_hand.svg</file>
-	<file>fonts/fontello.ttf</file>
+	<file>fonts/myfontello.ttf</file>
 	<file>qtquickcontrols2.conf</file>
     </qresource>
 </RCC>

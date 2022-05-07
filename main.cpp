@@ -153,6 +153,10 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+    QFontDatabase fontDatabase;
+    if (fontDatabase.addApplicationFont(":/fonts/myfontello.ttf") == -1)
+	qWarning() << "Failed to load myfontello.ttf";
+
     PlaneController oslo2berlin;
     PlaneController berlin2london;
 
