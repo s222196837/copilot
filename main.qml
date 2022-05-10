@@ -10,8 +10,8 @@ ApplicationWindow {
     property var dashColor: "#4b4b4b"
     property var tempValue: 22
     property var tempUnits: "C"
-    property var sep: "   -   "
-    property var end: "       "
+    property var sep: "      ---      "
+    property var end: "               "
 
     id: window
     height: 700

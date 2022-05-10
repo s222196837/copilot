@@ -158,34 +158,4 @@ Page {
 
         visibleRegion: viewPort
     }
-
-    Rectangle {
-        id: infoBox
-        anchors.centerIn: parent
-        color: "white"
-        border.width: 1
-        width: text.width * 1.3
-        height: text.height * 1.3
-        radius: 5
-
-        Text {
-            id: text
-            anchors.centerIn: parent
-            text: qsTr("Welcome!")
-        }
-
-
-        Timer {
-            interval: 5000; running: true; repeat: false;
-            onTriggered: fadeOut.start()
-        }
-
-        NumberAnimation {
-            id: fadeOut; target: infoBox;
-            property: "opacity";
-            to: 0.0;
-            duration: 200
-            easing.type: Easing.InOutQuad
-        }
-    }
 }

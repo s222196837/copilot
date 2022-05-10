@@ -7,10 +7,14 @@ requires(qtConfig(udpsocket))
 SOURCES += \
 	main.cpp \
 	transponder.cpp \
+	Altimu10.cpp \
+	GPS.cpp \
 	# END SOURCES
 
 HEADERS += \
 	transponder.h \
+	Altimu10.h \
+	GPS.h \
 	# END HEADERS
 
 RESOURCES += qml.qrc

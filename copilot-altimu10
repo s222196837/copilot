@@ -1,0 +1,2 @@
+#!/bin/sh
+exec altimu10-ahrs --output euler --i2c-bus /dev/i2c-1

@@ -5,9 +5,13 @@
 #include <QTime>
 #include <QBasicTimer>
 #include <QDebug>
+#include <QProcess>
 #include <QFontDatabase>
 #include <QEasingCurve>
 #include <QGeoCoordinate>
+
+#include "Altimu10.h"
+#include "GPS.h"
 
 #define ANIMATION_DURATION 4000
 
@@ -27,7 +31,20 @@ public:
     {
         easingCurve.setType(QEasingCurve::InOutQuad);
         easingCurve.setPeriod(ANIMATION_DURATION);
+
+	fprintf(stderr, "PlaneController()\n");
     }
+
+#if 0
+    void positionUpdated(const QGeoPositionInfo &update)
+    {
+	QGeoCoordinate coordinates = update.coordinate();
+	fprintf(stderr, "positionUpdated: altitude=%.3f lat=%.3f long=%.3f\n",
+			coordinates.altitude(),
+			coordinates.latitude(),
+			coordinates.longitude());
+    }
+#endif
 
     void setFrom(const QGeoCoordinate& from)
     {
@@ -134,7 +151,7 @@ private:
 
 private:
     QGeoCoordinate currentPosition;
-    QGeoCoordinate fromCoordinate, toCoordinate;
+    QGeoCoordinate fromCoordinate, toCoordinate;	// TODO: nuke
     QBasicTimer timer;
     QTime startTime, finishTime;
     QEasingCurve easingCurve;
@@ -157,13 +174,21 @@ int main(int argc, char *argv[])
     if (fontDatabase.addApplicationFont(":/fonts/myfontello.ttf") == -1)
 	qWarning() << "Failed to load myfontello.ttf";
 
+    GPS gps;
+    Altimu10 altimu10;
+
+    PlaneController glider;
     PlaneController oslo2berlin;
     PlaneController berlin2london;
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("glider", &glider);
     engine.rootContext()->setContextProperty("oslo2Berlin", &oslo2berlin);
     engine.rootContext()->setContextProperty("berlin2London", &berlin2london);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+    gps.start();
+    altimu10.start();
 
     return app.exec();
 }
