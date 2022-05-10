@@ -1,10 +1,9 @@
 #include <QTextStream>
 #include "Altimu10.h"
 
-Altimu10::Altimu10(QString program): count(0)
+Altimu10::Altimu10(QString program): success(false), command(program), count(0)
 {
     connect(this, &QProcess::readyReadStandardOutput, this, &Altimu10::tryRead);
-    command = program;
 }
 
 Altimu10::~Altimu10()
@@ -36,5 +35,6 @@ Altimu10::parse(const char *line)
 		&acceleration[0], &acceleration[1], &acceleration[2],
 		&magnetic_field[0], &magnetic_field[1], &magnetic_field[2],
 		&pressure, &temperature);
-    return n == 11;
+    success = (n == 11);
+    return success;
 }

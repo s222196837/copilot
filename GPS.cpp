@@ -14,11 +14,10 @@ public:
     }
 };
 
-GPS::GPS(QString program) : hasFix(false), errors(0), count(0)
+GPS::GPS(QString program): success(false), command(program), errors(0), count(0)
 {
     connect(this, &QProcess::readyReadStandardOutput, this, &GPS::tryRead);
     fixSource = new FixSource();
-    command = program;
 }
 
 GPS::~GPS()
@@ -42,9 +41,11 @@ GPS::tryRead()
 
 	fprintf(stderr, "GPS: %s", bytes);
 	if (fixSource->parsePosInfoFromNmeaData(bytes, line.length(),
-			&position, &hasFix) == true)
+			&position, &success) == true) {
+	    success = true;
 	    count++;
-	else
+	} else {
 	    errors++;
+	}
     }
 }

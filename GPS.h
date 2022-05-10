@@ -15,16 +15,16 @@ public:
     ~GPS();
     void start() { QProcess::start(command, QStringList()); }
 
-    bool getFix() { return hasFix; }
+    bool valid() { return success; }
     QGeoCoordinate getPosition() { return position.coordinate(); }
 
 protected:
     void tryRead();
 
 private:
-    bool hasFix;
     QGeoPositionInfo position;
 
+    bool success;
     QString command;
     FixSource *fixSource;
     unsigned long long errors;

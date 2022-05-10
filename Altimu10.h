@@ -12,6 +12,7 @@ public:
     ~Altimu10();
     void start() { QProcess::start(command, QStringList()); }
 
+    bool valid() { return success; }
     const float *getVelocity() { return velocity; }
     const float *getAcceleration() { return acceleration; }
     const float *getMagneticField() { return magnetic_field; }
@@ -29,6 +30,7 @@ private:
     float temperature;
     float pressure;
 
+    bool success; // was previous parsing attempt successful
     QString command;
     unsigned long long count;
 };
