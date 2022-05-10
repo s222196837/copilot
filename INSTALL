@@ -1,0 +1,77 @@
+RUNTIME
+
+# apt-get install \
+	pcp \
+	gpsd \
+	qtpositioning5 \
+	qtlocation5 \
+	libqt5quick5 \	
+	libqt5qmlmodels5 \
+	libqt5qml5 \
+	libqt5network5 \
+	libqt5svg5 \
+	libqt5virtualkeyboard5 \
+	libqt5widgets5 \
+
+COMPILE
+
+# apt-get install \
+	\
+	libi2c-dev \
+	libpcp3-dev \
+	libeigen3-dev \
+	libqt5svg5-dev \
+	libqt5quick5-dev \
+	libqt5qmlmodels5-dev \
+	libqt5qml5-dev \
+	libqt5network5 \
+	libqt5svg5-dev \
+	libqt5widgets5-dev \
+	qml-module-qtquick-controls2 \
+	qml-module-qtquick-virtualkeyboard \
+	qtlocation5-dev	\
+	qtpositioning5-dev \
+	qt5-qmake
+
+RASPBERRY PI SETUP
+
+GPS uses the built in UART on the RX/TX pins, and the Altimu-10
+uses I2C for serial communication.  Setup the following:
+
+# sudo raspi-config
+
+> Interfacing Options
+	> I2C
+		> YES (to enabling SPI interface)
+		"The SPI interface is enabled.
+	> Serial
+		> NO (to enabling login shell)
+		> YES (to enabling serial port)
+		"The serial login shell is disabled.
+		 The serial interface is enabled"
+	> Finish
+
+# reboot
+
+I2C is now available via /dev/i2c-1	[ALTIMU-10]
+UART is now available via /dev/ttyS0	[GPS]
+
+ALTIMU-10 SETUP
+
+> git clone https://github.com/natoscott/altimu10-ahrs
+> make
+> sudo make install
+
+Once hardware is ready, run
+
+> minimu9-ahrs-calibrate
+
+Then verify
+
+> altimu10-ahrs --mode euler -b /dev/i2c-1
+
+
+
+GPS SETUP
+
+
