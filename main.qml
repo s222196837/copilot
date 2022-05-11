@@ -10,8 +10,7 @@ ApplicationWindow {
     property var dashColor: "#4b4b4b"
     property var tempValue: 22
     property var tempUnits: "C"
-    property var sep: "      ---      "
-    property var end: "               "
+    property var sep: " - "
 
     id: window
     height: 700
@@ -48,7 +47,8 @@ ApplicationWindow {
         Label {
 	    id: mainHeading
 	    textFormat: Text.RichText
-	    text: copilot + sep + environment() + end
+	    text: copilot + sep + environment()
+	    font.bold: true
             anchors.centerIn: parent
         }
 
@@ -178,7 +178,7 @@ ApplicationWindow {
 	repeat: true
 
 	onTriggered: {
-	    mainHeading.text = copilot + sep + environment() + end;
+	    mainHeading.text = copilot + sep + environment()
 	}
     }
 }
