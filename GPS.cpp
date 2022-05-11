@@ -41,11 +41,12 @@ GPS::tryRead()
 
 	fprintf(stderr, "GPS: %s", bytes);
 	if (fixSource->parsePosInfoFromNmeaData(bytes, line.length(),
-			&position, &success) == true) {
-	    success = true;
-	    count++;
-	} else {
+			&position, &success) == false) {
 	    errors++;
+	    continue;
 	}
+
+	emit positionChanged();
+	count++;
     }
 }

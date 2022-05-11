@@ -9,6 +9,7 @@ class FixSource;
 class GPS: public QProcess
 {
     Q_OBJECT
+    Q_PROPERTY(QGeoPositionInfo position READ getPosition NOTIFY positionChanged);
 
 public:
     GPS(QString s = QString("copilot-gps"));
@@ -16,7 +17,10 @@ public:
     void start() { QProcess::start(command, QStringList()); }
 
     bool valid() { return success; }
-    QGeoCoordinate getPosition() { return position.coordinate(); }
+    const QGeoPositionInfo getPosition() { return position; }
+
+signals:
+    void positionChanged();
 
 protected:
     void tryRead();
@@ -27,8 +31,8 @@ private:
     bool success;
     QString command;
     FixSource *fixSource;
-    unsigned long long errors;
-    unsigned long long count;
+    unsigned long long errors;	// TODO - PCP
+    unsigned long long count;	// TODO - PCP
 };
 
 #endif // GPS_H
