@@ -38,6 +38,17 @@ Page {
             }
 	}
 
+        Component.onCompleted: {
+            gps.positionChanged.connect(positionChanged)
+        }
+
+        function positionChanged () {
+            viewPoint = gps.position;
+            viewPoint.latitude -= 0.012;
+            viewPort = QtPositioning.rectangle(viewPoint, 0.008, 0.08);
+        }
+
         visibleRegion: viewPort
     }
+
 }
