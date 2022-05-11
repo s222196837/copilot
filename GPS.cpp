@@ -41,7 +41,7 @@ GPS::tryRead()
 
 	fprintf(stderr, "GPS: %s", bytes);
 	if (fixSource->parsePosInfoFromNmeaData(bytes, line.length(),
-			&position, &success) == false) {
+			&info, &success) == false) {
 	    errors++;
 	    continue;
 	}

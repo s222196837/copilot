@@ -182,6 +182,8 @@ int main(int argc, char *argv[])
     PlaneController berlin2london;
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("gps", &gps);
+    engine.rootContext()->setContextProperty("altimu10", &altimu10);
     engine.rootContext()->setContextProperty("glider", &glider);
     engine.rootContext()->setContextProperty("oslo2Berlin", &oslo2berlin);
     engine.rootContext()->setContextProperty("berlin2London", &berlin2london);

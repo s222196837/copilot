@@ -37,6 +37,22 @@ Page {
         }
 
         Plane {
+            id: gpsPlane
+            //pilotName: "GPS"
+            coordinate: gps.position
+
+            SequentialAnimation {
+                id: gpsPlaneAnimation
+                property real rotationDirection : 0;
+                NumberAnimation {
+                    target: gpsPlane; property: "bearing"; duration: 100
+                    easing.type: Easing.InOutQuad
+                    to: gpsPlaneAnimation.rotationDirection
+                }
+            }
+	}
+
+        Plane {
             id: qmlPlane
             pilotName: "QML"
             coordinate: oslo2Berlin.position

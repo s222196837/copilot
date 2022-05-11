@@ -9,7 +9,8 @@ class FixSource;
 class GPS: public QProcess
 {
     Q_OBJECT
-    Q_PROPERTY(QGeoPositionInfo position READ getPosition NOTIFY positionChanged);
+    Q_PROPERTY(QDateTime timestamp READ getTimestamp NOTIFY positionChanged);
+    Q_PROPERTY(QGeoCoordinate position READ getPosition NOTIFY positionChanged);
 
 public:
     GPS(QString s = QString("copilot-gps"));
@@ -17,7 +18,8 @@ public:
     void start() { QProcess::start(command, QStringList()); }
 
     bool valid() { return success; }
-    const QGeoPositionInfo getPosition() { return position; }
+    const QDateTime getTimestamp() { return info.timestamp(); }
+    const QGeoCoordinate getPosition() { return info.coordinate(); }
 
 signals:
     void positionChanged();
@@ -26,7 +28,7 @@ protected:
     void tryRead();
 
 private:
-    QGeoPositionInfo position;
+    QGeoPositionInfo info;
 
     bool success;
     QString command;
