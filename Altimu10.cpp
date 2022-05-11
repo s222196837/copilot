@@ -57,13 +57,13 @@ Altimu10::parse(const char *line)
 	    yaw = v[2];
 	    emit yawChanged();
 	}
-	if (abs((int)(pressure - v[9])) > 0) {
-	    pressure = v[9];
-	    emit pressureChanged();
-	}
-	if (abs((int)(temperature - v[10])) > 0) {
-	    temperature = v[10];
+	if (abs((int)(temperature - v[9])) > 0) {
+	    temperature = v[9];
 	    emit temperatureChanged();
+	}
+	if (abs((int)(pressure - v[10])) > 0) {
+	    pressure = v[10];
+	    emit pressureChanged();
 	}
 
 	success = true;

@@ -8,8 +8,6 @@ import QtLocation 5.15
 ApplicationWindow {
     property var copilot: "COPILOT"
     property var dashColor: "#4b4b4b"
-    property var tempValue: 22
-    property var tempUnits: "C"
     property var sep: " - "
 
     id: window
@@ -25,7 +23,7 @@ ApplicationWindow {
     function environment() {
 	// h:mm:ss AP - display updates contain seconds as well
 	return Qt.formatTime(new Date(), "h:mm AP") + ", "
-		+ tempValue + "<sup>o</sup>" + tempUnits;
+		+ Math.round(altimu10.temperature) + "<sup>o</sup>C";
     }
 
     header: ToolBar {
