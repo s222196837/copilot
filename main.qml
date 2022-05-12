@@ -7,7 +7,7 @@ import QtLocation 5.15
 ApplicationWindow {
     property var copilot: "COPILOT"
     property var dashColor: "#4b4b4b"
-    property var temp: 0
+    property var temperature: 0
     property var sep: " - "
 
     id: window
