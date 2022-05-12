@@ -8,6 +8,7 @@ import QtLocation 5.15
 ApplicationWindow {
     property var copilot: "COPILOT"
     property var dashColor: "#4b4b4b"
+    property var temp: 0
     property var sep: " - "
 
     id: window
@@ -21,9 +22,10 @@ ApplicationWindow {
     visible: true
 
     function environment() {
-	// h:mm:ss AP - display updates contain seconds as well
-	return Qt.formatTime(new Date(), "h:mm AP") + ", "
-		+ Math.round(altimu10.temperature) + "<sup>o</sup>C";
+	// report temperature in units of degrees celcius from Altimu10 sensor
+	var temperatureString = temperature + "<sup>o</sup>C";
+	// alternatively "h:mm:ss AP" displays updates containing seconds also
+	return Qt.formatTime(new Date(), "h:mm AP") + ", " + temperatureString;
     }
 
     header: ToolBar {
@@ -55,6 +57,14 @@ ApplicationWindow {
 	    anchors.right: parent.right
 	    anchors.verticalCenter: parent.verticalCenter
 	}
+
+        Component.onCompleted: {
+            altimu10.temperatureChanged.connect(temperatureChanged)
+        }
+
+        function temperatureChanged() {
+	    temperature = Math.round(altimu10.temperature);
+        }
     }
 
     footer: ToolBar {
