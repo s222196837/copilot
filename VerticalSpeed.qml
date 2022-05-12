@@ -60,11 +60,11 @@ Item {
         }
 
         function updateAltitude() {
-	    var timestamp = gps.timestamp.toMSecsSinceEpoch() / 1000.0;
+	    var timestamp = gps.timestamp.getUTCMilliseconds() / 1000.0;
 	    var altitude = gps.position.altitude;
 	    var interval = timestamp - lastTimestamp;
 	    if (interval == 0.0 || interval == timestamp) {
-		interval = 1.0;	// ensure no division by zero
+		interval = 1.0;	// 1sec ensure no division by zero
 		lastAltitude = altitude;  // first call, no change
 	    }
 	    climbRate = (altitude - lastAltitude) / interval;
