@@ -11,6 +11,7 @@ Page {
 
     property variant torquay: QtPositioning.coordinate(-38.342647, 144.319029)
 
+    property variant viewPointGPS: true
     property variant viewPoint: torquay
     property variant viewPort: QtPositioning.rectangle(viewPoint, 0.008, 0.08)
 
@@ -26,6 +27,11 @@ Page {
             id: gpsPlane
             // pilotName: "GPS"
             coordinate: gps.position
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { viewPointGPS = true; } // reset after pan/zoom
+	    }
 
             SequentialAnimation {
                 id: gpsPlaneAnimation
@@ -48,7 +54,27 @@ Page {
             viewPort = QtPositioning.rectangle(viewPoint, 0.008, 0.08);
         }
 
+        Component.onCompleted: {
+            gps.positionChanged.connect(positionChanged)
+        }
+
+        function positionChanged () {
+	    if (viewPointGPS) {
+                viewPoint = gps.position;
+		var hOffset = gpsMap.zoomLevel / 1000.0;
+		var vOffset = gpsMap.zoomLevel / 100.0;
+                viewPoint.latitude -= (vOffset * 0.2);
+                viewPort = QtPositioning.rectangle(viewPoint, hOffset, vOffset);
+	    }
+        }
+
+	// block updates from GPS during interaction
+	gesture.onPanStarted: { viewPointGPS = false; }
+	gesture.onTiltStarted: { viewPointGPS = false; }
+	gesture.onFlickStarted: { viewPointGPS = false; }
+	gesture.onPinchStarted: { viewPointGPS = false; }
+	gesture.onRotationStarted: { viewPointGPS = false; }
+
         visibleRegion: viewPort
     }
-
 }
