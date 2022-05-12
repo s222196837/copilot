@@ -18,7 +18,6 @@ class FlyingObject : public QObject
 public:
     FlyingObject()
     {
-	fprintf(stderr, "FlyingObject()\n");
         easingCurve.setType(QEasingCurve::InOutQuad);
         easingCurve.setPeriod(ANIMATION_DURATION);
     }

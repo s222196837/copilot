@@ -49,16 +49,6 @@ Page {
         }
 
         function positionChanged () {
-            viewPoint = gps.position;
-            viewPoint.latitude -= 0.012;
-            viewPort = QtPositioning.rectangle(viewPoint, 0.008, 0.08);
-        }
-
-        Component.onCompleted: {
-            gps.positionChanged.connect(positionChanged)
-        }
-
-        function positionChanged () {
 	    if (viewPointGPS) {
                 viewPoint = gps.position;
 		var hOffset = gpsMap.zoomLevel / 1000.0;
