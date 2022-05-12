@@ -1,4 +1,3 @@
-
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
@@ -9,11 +8,19 @@ Item {
 
     property var roll: 0.0
     property var pitch: 0.0
-    property var testPattern: true
+    property var testPattern: false
     property var faceDeltaX_new: 0.0
     property var faceDeltaX_old: 0.0
     property var faceDeltaY_new: 0.0
     property var faceDeltaY_old: 0.0
+    property var pixelsPerDegree: 1.7
+
+    function updateDisplay() {
+	var delta = pixelsPerDegree * pitch;
+	var rollRadians = Math.PI * roll / 180.0;
+	faceDeltaX_new = delta * Math.sin(rollRadians);
+	faceDeltaY_new = delta * Math.cos(rollRadians);
+    }
 
     Button {
 	background: Rectangle {
@@ -77,6 +84,18 @@ Item {
 		z: 10
 	    }
 	}
+
+        Component.onCompleted: {
+	    if (testPattern == false) {
+                altimu10.pitchChanged.connect(updateAttitude);
+	    }
+        }
+
+        function updateAttitude() {
+            pitch = altimu10.pitch;
+            roll = altimu10.roll;
+            updateDisplay();
+        }
     }
 
     // Testing - once every interval, induce constant pitch and roll
@@ -84,7 +103,6 @@ Item {
     Timer {
 	property var rollDirection : 1.0
 	property var pitchDirection : 1.0
-	property var pixelsPerDegree : 1.7
 
 	interval: 100
 	repeat: testPattern
@@ -96,17 +114,12 @@ Item {
 	    if (roll <= 0.0 || roll >= 360.0) {
 		rollDirection *= -1.0;
 	    }
-
 	    // translate (pitch)
 	    pitch += (1.0 * pitchDirection);
 	    if (pitch <= -10.0 || pitch >= 10.0) {
 		pitchDirection *= -1.0;
 	    }
-
-	    var delta = pixelsPerDegree * pitch;
-	    var rollRadians = Math.PI * roll / 180.0;
-	    faceDeltaX_new = delta * Math.sin(rollRadians);
-	    faceDeltaY_new = delta * Math.cos(rollRadians);
+	    updateDisplay();
 	}
     }
 }
