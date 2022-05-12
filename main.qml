@@ -4,7 +4,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtLocation 5.15
 
-
 ApplicationWindow {
     property var copilot: "COPILOT"
     property var dashColor: "#4b4b4b"

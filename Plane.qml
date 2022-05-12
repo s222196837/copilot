@@ -1,8 +1,6 @@
 import QtQuick 2.15
 import QtLocation 5.15
 
-//! [PlaneMapQuick1]
-// Plane.qml
 MapQuickItem {
     id: plane
     property string pilotName;
@@ -12,8 +10,6 @@ MapQuickItem {
     anchorPoint.y: image.height/2
 
     sourceItem: Grid {
-        //...
-//! [PlaneMapQuick1]
         columns: 1
         Grid {
             horizontalItemAlignment: Grid.AlignHCenter
@@ -66,10 +62,9 @@ MapQuickItem {
             }
         }
     }
+
     function showMessage(message) {
         banner.text = message
         playMessage.start()
-//! [PlaneMapQuick2]
     }
 }
-//! [PlaneMapQuick2]
