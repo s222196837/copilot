@@ -1,51 +1,19 @@
+#include <QDebug>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QDebug>
-#include <QEasingCurve>
-#include <QFontDatabase>
 
+#include "FlyingObject.h"
+#include "Transponder.h"
 #include "Altimu10.h"
 #include "GPS.h"
 
-#define ANIMATION_DURATION 1000
-
-class FlyingObject : public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(QGeoCoordinate position READ position WRITE setPosition NOTIFY positionChanged)
-
-public:
-    FlyingObject()
-    {
-        easingCurve.setType(QEasingCurve::InOutQuad);
-        easingCurve.setPeriod(ANIMATION_DURATION);
-    }
-
-    void setPosition(const QGeoCoordinate &c) {
-        if (currentPosition == c)
-            return;
-
-        currentPosition = c;
-        emit positionChanged();
-    }
-
-    QGeoCoordinate position() const
-    {
-        return currentPosition;
-    }
-
-signals:
-    void positionChanged();
-
-private:
-    QGeoCoordinate currentPosition;
-    QEasingCurve easingCurve;
-};
-
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif

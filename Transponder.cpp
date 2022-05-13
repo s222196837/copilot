@@ -1,5 +1,5 @@
+#include "Transponder.h"
 #include <sys/time.h>
-#include "transponder.h"
 
 Transponder::Transponder(QObject *parent)
     : QObject(parent),
@@ -15,7 +15,7 @@ Transponder::Transponder(QObject *parent)
     QUuid uuid;	/* Universally Unique ID for this transponder (one aircraft) */
     uuid.createUuid();
     memcpy(myself.senderUUID, uuid.toRfc4122().constData(), sizeof(myself.senderUUID));
-    myself.length1 = myself.length2 = sizeof(FlyingObject);
+    myself.length1 = myself.length2 = sizeof(IdentifiedFlyingObject);
     memcpy(myself.magic, "UFOP", sizeof(myself.magic));
 
     connect(&udpSocket4, &QUdpSocket::readyRead,
@@ -80,8 +80,8 @@ Transponder::processPendingDatagrams(void)
 void
 Transponder::decodeFlyingObject(QByteArray &message, size_t length)
 {
-    FlyingObject *tmp, *ufo = (struct FlyingObject *)message.constData();
-    static FlyingObject *object;
+    IdentifiedFlyingObject *tmp, *ufo = (IdentifiedFlyingObject *)message.constData();
+    static IdentifiedFlyingObject *object;
     static size_t size;
 
     if (length > 0)
@@ -89,9 +89,9 @@ Transponder::decodeFlyingObject(QByteArray &message, size_t length)
     else
 	recvErrors++;
 
-    if (length < sizeof(FlyingObject)) {
+    if (length < sizeof(IdentifiedFlyingObject)) {
 	fprintf(stderr, "Bad UFO packet length received: %zu < %zu\n",
-		length, sizeof(FlyingObject));
+		length, sizeof(IdentifiedFlyingObject));
 	recvCorrupt++;
 	return;
     }
@@ -105,7 +105,7 @@ Transponder::decodeFlyingObject(QByteArray &message, size_t length)
     // Highwater-mark allocated object to reduce frequent allocations
     // of same or similar-sized buffers on receipt of these messages.
     if (length > size) {
-	if ((tmp = (FlyingObject *)realloc(object, length)) == NULL)
+	if ((tmp = (IdentifiedFlyingObject *)realloc(object, length)) == NULL)
 	    return;
 	object = tmp;
 	size = length;
@@ -124,26 +124,26 @@ Transponder::decodeFlyingObject(QByteArray &message, size_t length)
     object->length2 = qFromLittleEndian(ufo->length2);
     // Before copying any strings, double check all lengths received
     if (ufo->length1 != ufo->length2 ||
-	ufo->length1 != length - sizeof(FlyingObject)) {
+	ufo->length1 != length - sizeof(IdentifiedFlyingObject)) {
 	fprintf(stderr, "Bad UFO packet length received: %u/%u vs %zu\n",
-		ufo->length1, ufo->length2, length - sizeof(FlyingObject));
+		ufo->length1, ufo->length2, length - sizeof(IdentifiedFlyingObject));
 	recvCorrupt++;
 	return;
     }
     // Finally check null termination on the identity string as well
-    if (ufo->identity[length - sizeof(FlyingObject)] != '\0') {
+    if (ufo->identity[length - sizeof(IdentifiedFlyingObject)] != '\0') {
 	fprintf(stderr, "Bad UFO packet identity terminal (%c)\n",
-		ufo->identity[length - sizeof(FlyingObject)]);
+		ufo->identity[length - sizeof(IdentifiedFlyingObject)]);
 	recvCorrupt++;
 	return;
     }
 
-    memcpy(object->identity, ufo->identity, length - sizeof(FlyingObject));
+    memcpy(object->identity, ufo->identity, length - sizeof(IdentifiedFlyingObject));
     memcpy(object->senderUUID, ufo->senderUUID, sizeof(object->senderUUID));
 
     QUuid uuid;
-    uuid.fromRfc4122(message + offsetof(FlyingObject, senderUUID));
-    QByteArray bytes(message + offsetof(FlyingObject, identity));
+    uuid.fromRfc4122(message + offsetof(IdentifiedFlyingObject, senderUUID));
+    QByteArray bytes(message + offsetof(IdentifiedFlyingObject, identity));
     QString sender(bytes);
 
 #ifdef DEBUG
@@ -177,7 +177,7 @@ Transponder::setIdentity(QString &newIdentity)
     myself.identityLength = identity.length() + 1;
 
     // track the total output length also (ID is the variable part)
-    myself.length1 = sizeof(FlyingObject) + myself.identityLength;
+    myself.length1 = sizeof(IdentifiedFlyingObject) + myself.identityLength;
     myself.length2 = myself.length1;
     return 0;
 }
@@ -236,7 +236,7 @@ Transponder::encodeFlyingObject(void)
 
     // Produce final (endian-safe) buffer contents
     broadcast.resize(myself.length1);
-    FlyingObject *out = (FlyingObject *)broadcast.data();
+    IdentifiedFlyingObject *out = (IdentifiedFlyingObject *)broadcast.data();
 
     // Strings first - these are endian neutral
     memcpy(out->magic, myself.magic, sizeof(out->magic));

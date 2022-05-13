@@ -5,7 +5,7 @@
 #include <QtCore>
 
 // Unidentified Flying Object Protocol (UFOP)
-typedef struct FlyingObject {			// Bytes|Details
+typedef struct IdentifiedFlyingObject {		// Bytes|Details
     unsigned char 	magic[4];		//  04  |  "UFOP"
     quint32		length1;		//  04  |  bytes
     quint64		timestamp;		//  08  |  milliseconds UTC
@@ -20,7 +20,7 @@ typedef struct FlyingObject {			// Bytes|Details
     quint32		altitude;		//  04  |  meters AMSL
     quint32		length2;		//  04  |  bytes (dup)
     unsigned char	identity[0];		//  XX  |  UTF8 CSV
-} FlyingObject;
+} IdentifiedFlyingObject;
 
 #define UFO_GROUP_IPv4	"239.255.43.21"
 #define UFO_GROUP_IPv6	"ff12::2115"
@@ -67,7 +67,7 @@ private:
     unsigned int recvCorrupt;	/* corrupt datagrams received */
 
     QString identity;
-    FlyingObject myself;	/* own location/heading/identity detail */
+    IdentifiedFlyingObject myself; /* location/heading/identity detail */
     QByteArray broadcast;	/* preallocated buffer for broadcasting */
 };
 
