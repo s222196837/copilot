@@ -32,41 +32,71 @@ Rectangle {
                 width: parent.width - 26
 
                 Switch {
-		    id: soundEnabledField
+                    id: soundEnabledField
                     text: "Sound"
-		    checked: mysettings.soundEnabled
+                    checked: settings.soundEnabled
+                    onToggled: {
+                        var enabled = soundEnabledField.checked;
+                        soundVolumeField.enabled = enabled;
+                        settings.soundEnabled = enabled;
+                    }
                 }
                 Dial {
-		    id: soundVolumeField
+                    id: soundVolumeField
                     anchors.horizontalCenter: parent.horizontalCenter
-		    value: 7
-		    from: 0
-		    to: 11
-		}
+                    enabled: settings.soundEnabled
+                    value: settings.soundVolume
+                    from: 0
+                    to: 11  // spinal tap mode
+                    onMoved: settings.soundVolume = value
+                }
                 Switch {
-		    id: wifiEnabledField
+                    id: wifiEnabledField
                     text: "Wi-Fi"
-		    checked: false
+                    checked: settings.wifiEnabled
+                    onToggled: {
+                        var enabled = wifiEnabledField.checked;
+                        wifiNetworkLabel.enabled = enabled;
+                        wifiNetworkField.enabled = enabled;
+                        wifiPassphraseField.enabled = enabled;
+                        wifiPassphraseLabel.enabled = enabled;
+                        settings.wifiEnabled = enabled;
+                    }
                 }
                 Label {
+                    id: wifiNetworkLabel
                     text: "Network Name (SSID)"
                     anchors.horizontalCenter: parent.horizontalCenter
+                    enabled: settings.wifiEnabled
                     font.pixelSize: 22
                 }
                 TextField {
-                    id: wifiNetwork
+                    id: wifiNetworkField
                     width: parent.width
-                    onAccepted: wifiPassphrase.focus = true
+                    text: settings.wifiNetwork
+                    enabled: settings.wifiEnabled
+                    onAccepted: wifiPassphraseField.focus = true
+                    onTextEdited: settings.wifiNetwork = text
                 }
                 Label {
+                    id: wifiPassphraseLabel
                     text: "Passphrase (empty if none)"
                     anchors.horizontalCenter: parent.horizontalCenter
+                    enabled: settings.wifiEnabled
                     font.pixelSize: 22
                 }
-                TextField {
-                    id: wifiPassphrase
+                TextInput {
+                    id: wifiPassphraseField
                     width: parent.width
-                    onAccepted: wifiNetwork.focus = true
+                    text: settings.wifiPassphrase
+                    font: wifiNetworkField.font
+                    color: wifiNetworkField.color
+                    cursorDelegate: wifiNetworkField.cursorDelegate
+                    enabled: settings.wifiEnabled
+                    echoMode: TextInput.Password
+                    passwordMaskDelay: 1000
+                    onAccepted: wifiNetworkField.focus = true
+                    onTextEdited: settings.wifiPassphrase = text
                 }
             }
         }

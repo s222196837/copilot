@@ -30,14 +30,14 @@ main(int argc, char *argv[])
 
     GPS gps;
     Altimu10 altimu10;
-    MySettings mysettings;
+    MySettings settings;
     Transponder transponder;
     FlyingObject aircraft;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("gps", &gps);
     engine.rootContext()->setContextProperty("altimu10", &altimu10);
-    engine.rootContext()->setContextProperty("mysettings", &mysettings);
+    engine.rootContext()->setContextProperty("settings", &settings);
     engine.rootContext()->setContextProperty("aircraft", &aircraft);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
