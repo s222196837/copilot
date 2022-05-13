@@ -31,29 +31,55 @@ Rectangle {
                 y: 12
                 width: parent.width - 26
 
+                Switch {
+                    id: trackingEnabledField
+                    text: "Live Tracking"
+                    font.pixelSize: 20
+                    checked: settings.soundEnabled
+                    onToggled: {
+                        var enabled = trackingEnabledField.checked;
+                        trackingUrlLabel.enabled = enabled;
+                        trackingUrlField.enabled = enabled;
+                        trackingKeyLabel.enabled = enabled;
+                        trackingKeyField.enabled = enabled;
+                        settings.trackingEnabled = enabled;
+                    }
+                }
                 Label {
+		    id: trackingUrlLabel
                     text: "URL"
-                    anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 22
-                }
-                ComboBox {
-		    id: trackingUrl
-                    width: parent.width
-		    model: [
-			"http://test.livetrack24.com",
-			"http://api.livetrack24.com"
-		    ]
-                }
-                Label {
-                    text: "Authentication Key"
+                    enabled: settings.trackingEnabled
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 22
                 }
                 TextField {
-                    id: authenticationKey
+		    id: trackingUrlField
                     width: parent.width
-                    inputMethodHints: Qt.ImhDigitsOnly | Qt.ImhLowercaseOnly | Qt.ImhUppercaseOnly
-                    onAccepted: trackingUrl.focus = true
+                    text: settings.trackingURL
+                    font.pixelSize: 20
+                    enabled: settings.trackingEnabled
+                    onAccepted: trackingKeyField.focus = true
+                    onTextEdited: settings.trackingURL = text
+                }
+                Label {
+                    id: trackingKeyLabel
+                    text: "Authentication Key"
+                    font.pixelSize: 22
+                    enabled: settings.trackingEnabled
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                TextInput {
+                    id: trackingKeyField
+                    width: parent.width
+                    text: settings.trackingKey
+                    font: trackingUrlField.font
+                    color: trackingUrlField.color
+                    cursorDelegate: trackingUrlField.cursorDelegate
+                    enabled: settings.trackingEnabled
+                    echoMode: TextInput.Password
+                    passwordMaskDelay: 1000
+                    onAccepted: trackingUrlField.focus = true
+                    onTextEdited: settings.trackingKey = text
                 }
             }
         }

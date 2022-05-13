@@ -16,7 +16,7 @@
 #define DEFAULT_PROXIMITY_PORT		42424
 #define DEFAULT_TRACKING_ENABLED	false
 #define DEFAULT_TRACKING_URL		"http://test.livetrack24.com"
-#define DEFAULT_TRACKING_KEY		""
+#define DEFAULT_TRACKING_KEY		"moc.24kcartevil.tset//:ptth"
 
 void
 MySettings::setPilotName(const QString &s)
