@@ -33,23 +33,29 @@ Rectangle {
 
                 Label {
                     text: "Aircraft"
-                    anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 22
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
                 TextField {
-		    id: aircraftNameField
+                    id: aircraftNameField
                     width: parent.width
-                    onAccepted: aircraftType.focus = true
+                    text: settings.aircraftName
+                    font.pixelSize: 20
+                    onAccepted: aircraftTypeField.focus = true
+                    onTextEdited: settings.aircraftName = text
                 }
                 Label {
                     text: "Type"
-                    anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 22
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                ComboBox {
-		    id: aircraftType
+                TextField {
+                    id: aircraftTypeField
                     width: parent.width
-		    model: ["Hang Glider", "Paraglider", "Sailplane" ]
+                    text: settings.aircraftType
+                    font.pixelSize: 20
+                    onAccepted: aircraftNameField.focus = true
+                    onTextEdited: settings.aircraftType = text
                 }
             }
         }
