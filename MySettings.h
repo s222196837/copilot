@@ -8,7 +8,7 @@ class MySettings : public QSettings
     Q_OBJECT
     Q_PROPERTY(QString pilotName READ pilotName WRITE setPilotName NOTIFY pilotNameChanged)
     Q_PROPERTY(QString pilotNickname READ pilotNickname WRITE setPilotNickname NOTIFY pilotNicknameChanged)
-    Q_PROPERTY(QString pilotRegistration READ pilotRegistration WRITE setPilotRegistration)
+    Q_PROPERTY(QString pilotRegistration READ pilotRegistration WRITE setPilotRegistration NOTIFY pilotRegistrationChanged)
     Q_PROPERTY(QString aircraftName READ aircraftName WRITE setAircraftName NOTIFY aircraftNameChanged)
     Q_PROPERTY(QString aircraftType READ aircraftType WRITE setAircraftType NOTIFY aircraftTypeChanged)
     Q_PROPERTY(bool soundEnabled READ soundEnabled WRITE setSoundEnabled NOTIFY soundEnabledChanged)

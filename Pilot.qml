@@ -37,11 +37,11 @@ Rectangle {
                     font.pixelSize: 22
                 }
                 TextField {
-		    id: pilotFullNameField
+		    id: pilotNameField
                     width: parent.width
                     text: settings.pilotName
                     font.pixelSize: 20
-                    onAccepted: nicknameField.focus = true
+                    onAccepted: pilotNicknameField.focus = true
                     onTextEdited: settings.pilotName = text
                 }
                 Label {
@@ -63,11 +63,11 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
                 TextField {
-		    id: registrationField
+		    id: pilotRegistrationField
                     width: parent.width
                     text: settings.pilotRegistration
                     font.pixelSize: 20
-                    onAccepted: pilotFullNameField.focus = true
+                    onAccepted: pilotNameField.focus = true
                     onTextEdited: settings.pilotRegistration = text
                 }
             }
