@@ -39,30 +39,36 @@ Rectangle {
                 TextField {
 		    id: pilotFullNameField
                     width: parent.width
-                    //enterKeyAction: EnterKeyAction.Next
+                    text: settings.pilotName
+                    font.pixelSize: 20
                     onAccepted: nicknameField.focus = true
+                    onTextEdited: settings.pilotName = text
                 }
                 Label {
                     text: "Nick Name"
-                    anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 22
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
                 TextField {
-		    id: pilotNickNameField
+		    id: pilotNicknameField
                     width: parent.width
-                    //enterKeyAction: EnterKeyAction.Next
+                    text: settings.pilotNickname
+                    font.pixelSize: 20
                     onAccepted: registrationField.focus = true
+                    onTextEdited: settings.pilotNickname = text
                 }
                 Label {
                     text: "Registration"
-                    anchors.horizontalCenter: parent.horizontalCenter
                     font.pixelSize: 22
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
                 TextField {
 		    id: registrationField
                     width: parent.width
-                    //enterKeyAction: EnterKeyAction.Next
+                    text: settings.pilotRegistration
+                    font.pixelSize: 20
                     onAccepted: pilotFullNameField.focus = true
+                    onTextEdited: settings.pilotRegistration = text
                 }
             }
         }

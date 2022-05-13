@@ -34,6 +34,7 @@ Rectangle {
                 Switch {
                     id: soundEnabledField
                     text: "Sound"
+                    font.pixelSize: 20
                     checked: settings.soundEnabled
                     onToggled: {
                         var enabled = soundEnabledField.checked;
@@ -53,6 +54,7 @@ Rectangle {
                 Switch {
                     id: wifiEnabledField
                     text: "Wi-Fi"
+                    font.pixelSize: 20
                     checked: settings.wifiEnabled
                     onToggled: {
                         var enabled = wifiEnabledField.checked;
@@ -66,14 +68,15 @@ Rectangle {
                 Label {
                     id: wifiNetworkLabel
                     text: "Network Name (SSID)"
+                    font.pixelSize: 22
                     anchors.horizontalCenter: parent.horizontalCenter
                     enabled: settings.wifiEnabled
-                    font.pixelSize: 22
                 }
                 TextField {
                     id: wifiNetworkField
                     width: parent.width
                     text: settings.wifiNetwork
+                    font.pixelSize: 20
                     enabled: settings.wifiEnabled
                     onAccepted: wifiPassphraseField.focus = true
                     onTextEdited: settings.wifiNetwork = text
@@ -81,9 +84,9 @@ Rectangle {
                 Label {
                     id: wifiPassphraseLabel
                     text: "Passphrase (empty if none)"
+                    font.pixelSize: 22
                     anchors.horizontalCenter: parent.horizontalCenter
                     enabled: settings.wifiEnabled
-                    font.pixelSize: 22
                 }
                 TextInput {
                     id: wifiPassphraseField
