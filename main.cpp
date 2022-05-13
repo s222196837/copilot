@@ -6,6 +6,7 @@
 
 #include "FlyingObject.h"
 #include "Transponder.h"
+#include "MySettings.h"
 #include "Altimu10.h"
 #include "GPS.h"
 
@@ -24,13 +25,19 @@ main(int argc, char *argv[])
     if (fontDatabase.addApplicationFont(":/fonts/myfontello.ttf") == -1)
 	qWarning() << "Failed to load myfontello.ttf";
 
+    QCoreApplication::setOrganizationName("copilot");
+    QCoreApplication::setApplicationName("copilot");
+
     GPS gps;
     Altimu10 altimu10;
+    MySettings mysettings;
+    Transponder transponder;
     FlyingObject aircraft;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("gps", &gps);
     engine.rootContext()->setContextProperty("altimu10", &altimu10);
+    engine.rootContext()->setContextProperty("mysettings", &mysettings);
     engine.rootContext()->setContextProperty("aircraft", &aircraft);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 

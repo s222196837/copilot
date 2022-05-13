@@ -34,7 +34,7 @@ Rectangle {
                 Switch {
 		    id: soundEnabledField
                     text: "Sound"
-		    checked: true
+		    checked: mysettings.soundEnabled
                 }
                 Dial {
 		    id: soundVolumeField

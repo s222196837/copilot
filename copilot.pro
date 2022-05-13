@@ -6,6 +6,7 @@ requires(qtConfig(udpsocket))
 
 SOURCES += \
 	main.cpp \
+	MySettings.cpp \
 	FlyingObject.cpp \
 	Transponder.cpp \
 	Altimu10.cpp \
@@ -13,6 +14,7 @@ SOURCES += \
 	# END SOURCES
 
 HEADERS += \
+	MySettings.h \
 	FlyingObject.h \
 	Transponder.h \
 	Altimu10.h \
