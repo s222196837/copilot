@@ -3,9 +3,11 @@ TARGET = copilot
 QT += qml quick positioning location network svg
 QTPLUGIN += qtvirtualkeyboardplugin
 requires(qtConfig(udpsocket))
+LIBS += -lpcp -lpcp_mmv
 
 SOURCES += \
 	main.cpp \
+	MyMetrics.cpp \
 	MySettings.cpp \
 	FlyingObject.cpp \
 	Transponder.cpp \
@@ -14,6 +16,7 @@ SOURCES += \
 	# END SOURCES
 
 HEADERS += \
+	MyMetrics.h \
 	MySettings.h \
 	FlyingObject.h \
 	Transponder.h \

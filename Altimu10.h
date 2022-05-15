@@ -2,6 +2,7 @@
 #define ALTIMU10_H
 
 #include <QProcess>
+#include "MyMetrics.h"
 
 class Altimu10 : public QProcess
 {
@@ -13,9 +14,10 @@ class Altimu10 : public QProcess
     Q_PROPERTY(float temperature READ getTemperature NOTIFY temperatureChanged)
 
 public:
-    Altimu10(QString program = QString("copilot-altimu10"));
+    Altimu10(QString program, MyMetrics *registry = NULL, bool debug = false);
     ~Altimu10();
-    void start() { QProcess::start(command, QStringList()); }
+
+    void start();
 
     bool valid() { return success; }
 
@@ -43,9 +45,13 @@ private:
     float temperature;
     float pressure;
 
+    bool diagnostics;	// output debugging information
     bool success; // was previous parsing attempt successful
     QString command;
-    unsigned long long count;	// TODO: metrics
+
+    MyMetrics *metrics;
+    uint64_t *errors;
+    uint64_t *count;
 };
 
 #endif // ALTIMU10_H

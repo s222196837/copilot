@@ -1,8 +1,10 @@
 #ifndef TRANSPONDER_H
 #define TRANSPONDER_H
 
-#include <QtNetwork>
 #include <QtCore>
+#include <QtNetwork>
+#include "MyMetrics.h"
+#include "MySettings.h"
 
 // Unidentified Flying Object Protocol (UFOP)
 typedef struct IdentifiedFlyingObject {		// Bytes|Details
@@ -22,16 +24,14 @@ typedef struct IdentifiedFlyingObject {		// Bytes|Details
     unsigned char	identity[0];		//  XX  |  UTF8 CSV
 } IdentifiedFlyingObject;
 
-#define UFO_GROUP_IPv4	"239.255.43.21"
-#define UFO_GROUP_IPv6	"ff12::2115"
-#define UFO_PORT	42424
-
 class Transponder : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Transponder(QObject *parent = nullptr);
+    Transponder(MyMetrics *registry = NULL, MySettings *config = NULL, bool debug = false);
+    void start();
+    void stop();
 
 public slots:
     int setIdentity(QString &identity);
@@ -46,7 +46,6 @@ signals:
 
 private slots:
     void setTimeToLive(int newTtl);
-    void startTransmission(void);
     void sendDatagram(void);
     void processPendingDatagrams(void);
 
@@ -54,17 +53,22 @@ private:
     void decodeFlyingObject(QByteArray&, size_t);
     void encodeFlyingObject(void);
 
+    bool diagnostics;	// output debugging information
+
+    MySettings *settings;
+    int port;
     QHostAddress groupAddress4;
     QHostAddress groupAddress6;
     QUdpSocket udpSocket4;
     QUdpSocket udpSocket6;
     QTimer timer;
 
-    unsigned int sendCount;	/* successfully message sends */
-    unsigned int recvCount;	/* successfully message recvs */
-    unsigned int sendErrors;	/* networking errors on sends */
-    unsigned int recvErrors;	/* networking errors on recvs */
-    unsigned int recvCorrupt;	/* corrupt datagrams received */
+    MyMetrics *metrics;
+    uint64_t *sendCount;	/* successfully sent messages */
+    uint64_t *recvCount;	/* successfully recv messages */
+    uint64_t *sendErrors;	/* networking errors on sends */
+    uint64_t *recvErrors;	/* networking errors on recvs */
+    uint64_t *recvCorrupt;	/* corrupt datagrams received */
 
     QString identity;
     IdentifiedFlyingObject myself; /* location/heading/identity detail */

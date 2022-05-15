@@ -1,22 +1,51 @@
 #include "Transponder.h"
 #include <sys/time.h>
 
-Transponder::Transponder(QObject *parent)
-    : QObject(parent),
-      groupAddress4(QStringLiteral(UFO_GROUP_IPv4)),
-      groupAddress6(QStringLiteral(UFO_GROUP_IPv6))
-{
-    udpSocket4.bind(QHostAddress::AnyIPv4, UFO_PORT, QUdpSocket::ShareAddress);
-    udpSocket4.joinMulticastGroup(groupAddress4);
+// fallbacks if unavailable from UI settings
+#define UFO_GROUP_IPv4	"239.255.43.21"
+#define UFO_GROUP_IPv6	"ff12::2115"
+#define UFO_PORT	42424
 
-    udpSocket6.bind(QHostAddress::AnyIPv6, UFO_PORT, QUdpSocket::ShareAddress);
-    udpSocket6.joinMulticastGroup(groupAddress6);
+Transponder::Transponder(MyMetrics *registry, MySettings *config, bool debug):
+	QObject(nullptr), diagnostics(debug), settings(config), port(UFO_PORT),
+	groupAddress4(QStringLiteral(UFO_GROUP_IPv4)),
+	groupAddress6(QStringLiteral(UFO_GROUP_IPv6))
+{
+    if ((metrics = registry) != NULL) {
+	metrics->add("transponder.send.count", "successfully sent messages");
+	metrics->add("transponder.recv.count", "successfully recv'd messages");
+	metrics->add("transponder.send.errors", "networking errors on sends");
+	metrics->add("transponder.recv.errors", "networking errors on recvs");
+	metrics->add("transponder.recv.corrupt", "bad datagrams received");
+    }
 
     QUuid uuid;	/* Universally Unique ID for this transponder (one aircraft) */
     uuid.createUuid();
     memcpy(myself.senderUUID, uuid.toRfc4122().constData(), sizeof(myself.senderUUID));
     myself.length1 = myself.length2 = sizeof(IdentifiedFlyingObject);
     memcpy(myself.magic, "UFOP", sizeof(myself.magic));
+}
+
+void
+Transponder::start(void)
+{
+    sendCount = (uint64_t *)metrics->map("transponder.send.count");
+    sendErrors = (uint64_t *)metrics->map("transponder.send.errors");
+    recvCount = (uint64_t *)metrics->map("transponder.recv.count");
+    recvErrors = (uint64_t *)metrics->map("transponder.recv.errors");
+    recvCorrupt = (uint64_t *)metrics->map("transponder.recv.corrupt");
+
+    if (settings) {
+	groupAddress4 = QHostAddress(settings->proximityIPv4());
+	groupAddress6 = QHostAddress(settings->proximityIPv6());
+	port = settings->proximityPort();
+    }
+
+    udpSocket4.bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress);
+    udpSocket4.joinMulticastGroup(groupAddress4);
+
+    udpSocket6.bind(QHostAddress::AnyIPv6, port, QUdpSocket::ShareAddress);
+    udpSocket6.joinMulticastGroup(groupAddress6);
 
     connect(&udpSocket4, &QUdpSocket::readyRead,
             this, &Transponder::processPendingDatagrams);
@@ -24,6 +53,16 @@ Transponder::Transponder(QObject *parent)
             this, &Transponder::processPendingDatagrams);
 
     connect(&timer, &QTimer::timeout, this, &Transponder::sendDatagram);
+
+    timer.start(1000);
+}
+
+void
+Transponder::stop(void)
+{
+    timer.stop();
+    udpSocket4.close();
+    udpSocket6.close();
 }
 
 void
@@ -34,28 +73,28 @@ Transponder::setTimeToLive(int ttl)
 }
 
 void
-Transponder::startTransmission(void)
-{
-    timer.start(1000);
-}
-
-void
 Transponder::sendDatagram(void)
 {
     encodeFlyingObject();
 
-    if (udpSocket4.write(broadcast, broadcast.length()) == broadcast.length())
-	sendCount++;
-    else
-	sendErrors++;
+    if (udpSocket4.write(broadcast, broadcast.length()) == broadcast.length()) {
+	if (metrics)
+	    (*sendCount)++;
+    } else {
+	if (metrics)
+	    (*sendErrors)++;
+    }
 
     if (udpSocket6.state() != QAbstractSocket::BoundState)
 	return;
 
-    if (udpSocket6.write(broadcast, broadcast.length()) == broadcast.length())
-	sendCount++;
-    else
-	sendErrors++;
+    if (udpSocket6.write(broadcast, broadcast.length()) == broadcast.length()) {
+	if (metrics)
+	    (*sendCount)++;
+    } else {
+	if (metrics)
+	    (*sendErrors)++;
+    }
 }
 
 void
@@ -84,21 +123,26 @@ Transponder::decodeFlyingObject(QByteArray &message, size_t length)
     static IdentifiedFlyingObject *object;
     static size_t size;
 
-    if (length > 0)
-	recvCount++;
-    else
-	recvErrors++;
+    if (length > 0) {
+	if (metrics)
+	    recvCount++;
+    } else {
+	if (metrics)
+	    recvErrors++;
+    }
 
     if (length < sizeof(IdentifiedFlyingObject)) {
 	fprintf(stderr, "Bad UFO packet length received: %zu < %zu\n",
 		length, sizeof(IdentifiedFlyingObject));
-	recvCorrupt++;
+	if (metrics)
+	    recvCorrupt++;
 	return;
     }
     if (memcmp(ufo->magic, "UFOP", 4) != 0) {
 	fprintf(stderr, "Bad UFO packet magic received: %c%c%c%c\n",
 		ufo->magic[0], ufo->magic[1], ufo->magic[2], ufo->magic[3]);
-	recvCorrupt++;
+	if (metrics)
+	    recvCorrupt++;
 	return;
     }
 
@@ -127,14 +171,16 @@ Transponder::decodeFlyingObject(QByteArray &message, size_t length)
 	ufo->length1 != length - sizeof(IdentifiedFlyingObject)) {
 	fprintf(stderr, "Bad UFO packet length received: %u/%u vs %zu\n",
 		ufo->length1, ufo->length2, length - sizeof(IdentifiedFlyingObject));
-	recvCorrupt++;
+	if (metrics)
+	    recvCorrupt++;
 	return;
     }
     // Finally check null termination on the identity string as well
     if (ufo->identity[length - sizeof(IdentifiedFlyingObject)] != '\0') {
 	fprintf(stderr, "Bad UFO packet identity terminal (%c)\n",
 		ufo->identity[length - sizeof(IdentifiedFlyingObject)]);
-	recvCorrupt++;
+	if (metrics)
+	    recvCorrupt++;
 	return;
     }
 

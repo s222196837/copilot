@@ -14,10 +14,17 @@ public:
     }
 };
 
-GPS::GPS(QString program): success(false), command(program), errors(0), count(0)
+GPS::GPS(QString program, MyMetrics *registry, bool debug):
+	diagnostics(debug), success(false), command(program)
 {
-    connect(this, &QProcess::readyReadStandardOutput, this, &GPS::tryRead);
     fixSource = new FixSource();
+
+    if ((metrics = registry) != NULL) {
+	metrics->add("gps.errors", "number of lines of bad GPS data");
+	metrics->add("gps.count", "successfully parsed NMEA strings");
+    }
+
+    connect(this, &QProcess::readyReadStandardOutput, this, &GPS::tryRead);
 }
 
 GPS::~GPS()
@@ -30,23 +37,39 @@ GPS::~GPS()
 }
 
 void
+GPS::start()
+{
+    // prepare memory mapped metric pointers for live updating
+    errors = (uint64_t *)metrics->map("gps.errors");
+    count = (uint64_t *)metrics->map("gps.count");
+
+    // start the GPS data harvesting process
+    QProcess::start(command, QStringList());
+}
+
+void
 GPS::tryRead()
 {
     while (canReadLine()) {
 	QByteArray line = readLine();
 	const char *bytes = (const char *)line.constData();
 
+	// only interested in position information, ignore all else
 	if (strncmp(bytes, "$GNGGA", 6) != 0)
 	    continue;
 
-	fprintf(stderr, "GPS: %s", bytes);
+	if (diagnostics)
+	    fprintf(stderr, "GPS: %s", bytes);
+
 	if (fixSource->parsePosInfoFromNmeaData(bytes, line.length(),
 			&info, &success) == false) {
-	    errors++;
-	    continue;
-	}
+	    if (metrics)
+		(*errors)++;
+	} else {
+	    if (metrics)
+		(*count)++;
 
-	emit positionChanged();
-	count++;
+	    emit positionChanged();
+	}
     }
 }

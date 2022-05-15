@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include <QGeoPositionInfo>
+#include "MyMetrics.h"
 
 class FixSource;
 
@@ -13,9 +14,9 @@ class GPS: public QProcess
     Q_PROPERTY(QGeoCoordinate position READ getPosition NOTIFY positionChanged);
 
 public:
-    GPS(QString s = QString("copilot-gps"));
+    GPS(QString command, MyMetrics *registry = NULL, bool debug = false);
     ~GPS();
-    void start() { QProcess::start(command, QStringList()); }
+    void start();
 
     bool valid() { return success; }
     const QDateTime getTimestamp() { return info.timestamp(); }
@@ -29,12 +30,15 @@ protected:
 
 private:
     QGeoPositionInfo info;
+    FixSource *fixSource;
 
+    bool diagnostics;	// output debugging information
     bool success;
     QString command;
-    FixSource *fixSource;
-    unsigned long long errors;	// TODO - PCP
-    unsigned long long count;	// TODO - PCP
+
+    MyMetrics *metrics;
+    uint64_t *errors;	// bad input counter
+    uint64_t *count;	// success counter
 };
 
 #endif // GPS_H

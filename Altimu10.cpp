@@ -1,10 +1,15 @@
 #include <QTextStream>
 #include "Altimu10.h"
 
-Altimu10::Altimu10(QString program):
+Altimu10::Altimu10(QString program, MyMetrics *registry, bool debug):
 	pitch(0.0), roll(0.0), yaw(0.0), temperature(0.0), pressure(0.0),
-	success(false), command(program), count(0)
+	diagnostics(debug), success(false), command(program)
 {
+    if ((metrics = registry) != NULL) {
+	metrics->add("altimu10.errors", "count of lines of bad Altimu10 data");
+	metrics->add("altimu10.count", "successfully read Altimu10 sensors");
+    }
+
     connect(this, &QProcess::readyReadStandardOutput, this, &Altimu10::tryRead);
 }
 
@@ -17,18 +22,31 @@ Altimu10::~Altimu10()
 }
 
 void
+Altimu10::start()
+{
+    // prepare memory mapped metric pointers for live updating
+    errors = (uint64_t *)metrics->map("altimu10.errors");
+    count = (uint64_t *)metrics->map("altimu10.count");
+
+    QProcess::start(command, QStringList());
+}
+
+void
 Altimu10::tryRead()
 {
     while (canReadLine()) {
 	QByteArray bytes = readLine();
 
-	fprintf(stderr, "ALTIMU10: %s", (const char *)bytes.constData());
-	if (parse(bytes.constData()) == false)
-	    continue;
-	fprintf(stderr, "TEMPERATURE: %f", temperature);
-	fprintf(stderr, " PRESSURE: %f\n", pressure);
+	if (diagnostics)
+	    fprintf(stderr, "ALTIMU10: %s", (const char *)bytes.constData());
 
-	count++;
+	if (parse(bytes.constData()) == false) {
+	    if (metrics)
+		(*errors)++;
+	} else {
+	    if (metrics)
+		(*count)++;
+	}
     }
 }
 
