@@ -2,7 +2,7 @@ RUNTIME
 
 # apt-get install \
 	pcp \
-	gpsd \
+	pijuice-base \
 	qtpositioning5 \
 	qtlocation5 \
 	libqt5quick5 \	
@@ -19,6 +19,7 @@ COMPILE
 	\
 	libi2c-dev \
 	libpcp3-dev \
+	libpcp-mmv1-dev \
 	libeigen3-dev \
 	libqt5svg5-dev \
 	libqt5quick5-dev \
@@ -56,6 +57,7 @@ uses I2C for serial communication.  Setup the following:
 I2C is now available via /dev/i2c-1	[ALTIMU-10]
 UART is now available via /dev/ttyS0	[GPS]
 
+
 ALTIMU-10 SETUP
 
 > git clone https://github.com/natoscott/altimu10-ahrs
@@ -68,10 +70,26 @@ Once hardware is ready, run
 
 Then verify
 
-> altimu10-ahrs --mode euler -b /dev/i2c-1
+> ./copilot-altimu10
 
+
+METRICS SETUP
+
+> sudo chmod o+w,+t /var/lib/pcp/tmp/mmv
+
+When ./copilot program is running live metrics will be available
+via PCP tools, eg.
+
+> pmie -e -v mmv.copilot.altimu10.count
 
 
 GPS SETUP
+BUZZER SETUP
+BATTERY SETUP
 
+No special setup required for these components, to test:
+
+> ./copilot-gps
+> ./copilot-buzzer 1 1
+> ./copilot-battery
 
