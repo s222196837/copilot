@@ -12,6 +12,7 @@ SOURCES += \
 	FlyingObject.cpp \
 	Transponder.cpp \
 	Altimu10.cpp \
+	Battery.cpp \
 	GPS.cpp \
 	# END SOURCES
 
@@ -21,6 +22,7 @@ HEADERS += \
 	FlyingObject.h \
 	Transponder.h \
 	Altimu10.h \
+	Battery.h \
 	GPS.h \
 	# END HEADERS
 

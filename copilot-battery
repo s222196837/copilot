@@ -23,6 +23,7 @@ try:
             error = charge['error']
             pct = charge['data']
 
+            # produces lines like: "NO_ERROR 98 NOT_PRESENT PRESENT"
             sys.stdout.write("%s %d %s %s\n" % (error, pct, pwin, pwin5))
 
         except:
