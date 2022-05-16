@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+""" Emit sound for a duration at a given volume via the buzzer """
+
+import sys
+import time
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD) # use physical pin numbering
+
+LED = 40 # pin number
+MAX = 2000 # max buzzer frequency
+
+# set it as an output pin and set initial value to low (off)
+GPIO.setup(LED, GPIO.OUT, initial = GPIO.LOW)
+pwm = GPIO.PWM(LED, MAX) # initialize PWM to buzzer frequency
+
+
+def limit(cycle):
+    """ Enforce the duty cycle range of zero to 100 (percent) """
+    if cycle < 0:
+       cycle = 0
+    if cycle > 100:
+       cycle = 100
+    return cycle
+
+
+def buzz(interval, volume = 60.0):
+    """ Emit the sound requested """
+    #print("interval: %.2f volume: %.1f\n" % (interval, volume))
+
+    pwm.ChangeDutyCycle(limit(volume))
+    time.sleep(interval)
+    pwm.ChangeDutyCycle(0)
+
+
+# main program logic starts here
+exitstatus = 0
+
+try:
+    pwm.start(0)
+
+    # with command line parameters, use them and exit
+    if len(sys.argv) > 1:
+        try:
+            delta = float(sys.argv[1])
+            if len(sys.argv) > 2:
+                volume = float(sys.argv[2])
+            else:
+                volume = None
+
+            buzz(delta, volume)
+
+        except ValueError:
+            exitstatus = 1
+
+    
+    else:
+        # no command line parameters, read from stdin
+        while True:
+            for line in sys.stdin:
+                input = line.rstrip().split()
+                if len(input) < 1:
+                    break
+                if input[0] in ['q', 'quit', 'exit']:
+                    break
+                try:
+                    delta = float(input[0])
+                    volume = float(input[1])
+                except IndexError:
+                    pass # volume is optional
+                except ValueError:
+                    continue # bad input data
+
+                buzz(delta, volume)
+
+except KeyboardInterrupt:
+    pass
+
+pwm.stop()
+GPIO.cleanup()
+raise SystemExit(exitstatus)
