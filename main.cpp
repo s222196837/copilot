@@ -5,9 +5,10 @@
 
 #include "MyMetrics.h"
 #include "MySettings.h"
-//#include "FlyingObject.h"
 #include "Transponder.h"
 #include "Altimu10.h"
+#include "Battery.h"
+#include "Buzzer.h"
 #include "GPS.h"
 
 int
@@ -39,9 +40,10 @@ main(int argc, char *argv[])
     MyMetrics metrics;
     MySettings settings;
     GPS gps("copilot-gps", &metrics, debug);
+    Buzzer buzzer("copilot-buzzer", &metrics, debug);
+    Battery battery("copilot-battery", &metrics, debug);
     Altimu10 altimu10("copilot-altimu10", &metrics, debug);
-    //Transponder transponder(&metrics, &settings, debug);
-    //FlyingObject aircraft;
+    Transponder transponder(&metrics, &settings, debug);
 
     // instrumentation is available from now
     metrics.start();
@@ -49,14 +51,17 @@ main(int argc, char *argv[])
     // inject C++ objects into QML and load resources
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("gps", &gps);
+    engine.rootContext()->setContextProperty("buzzer", &buzzer);
+    engine.rootContext()->setContextProperty("battery", &battery);
     engine.rootContext()->setContextProperty("altimu10", &altimu10);
-    //engine.rootContext()->setContextProperty("aircraft", &aircraft);
     engine.rootContext()->setContextProperty("settings", &settings);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // hardware bringup
     //transponder.start();
     altimu10.start();
+    battery.start();
+    buzzer.start();
     gps.start();
 
     // main loop

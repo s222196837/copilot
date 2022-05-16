@@ -47,8 +47,8 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     enabled: settings.soundEnabled
                     value: settings.soundVolume
-                    from: 0
-                    to: 11  // spinal tap mode
+                    from: 1
+                    to: 100
                     onMoved: settings.soundVolume = value
                 }
                 Switch {

@@ -13,6 +13,7 @@ SOURCES += \
 	Transponder.cpp \
 	Altimu10.cpp \
 	Battery.cpp \
+	Buzzer.cpp \
 	GPS.cpp \
 	# END SOURCES
 
@@ -23,6 +24,7 @@ HEADERS += \
 	Transponder.h \
 	Altimu10.h \
 	Battery.h \
+	Buzzer.h \
 	GPS.h \
 	# END HEADERS
 
