@@ -5,7 +5,7 @@
 
 #include "MyMetrics.h"
 #include "MySettings.h"
-#include "FlyingObject.h"
+//#include "FlyingObject.h"
 #include "Transponder.h"
 #include "Altimu10.h"
 #include "GPS.h"
@@ -40,8 +40,8 @@ main(int argc, char *argv[])
     MySettings settings;
     GPS gps("copilot-gps", &metrics, debug);
     Altimu10 altimu10("copilot-altimu10", &metrics, debug);
-    Transponder transponder(&metrics, &settings, debug);
-    FlyingObject aircraft;
+    //Transponder transponder(&metrics, &settings, debug);
+    //FlyingObject aircraft;
 
     // instrumentation is available from now
     metrics.start();
@@ -50,17 +50,15 @@ main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("gps", &gps);
     engine.rootContext()->setContextProperty("altimu10", &altimu10);
-    engine.rootContext()->setContextProperty("aircraft", &aircraft);
+    //engine.rootContext()->setContextProperty("aircraft", &aircraft);
     engine.rootContext()->setContextProperty("settings", &settings);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // hardware bringup
-    transponder.start();
+    //transponder.start();
     altimu10.start();
     gps.start();
 
     // main loop
     return app.exec();
 }
-
-#include "main.moc"
