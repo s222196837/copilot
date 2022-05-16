@@ -1,3 +1,6 @@
+#ifndef FLYINGOBJECT_H
+#define FLYINGOBJECT_H
+
 #include <QObject>
 #include <QEasingCurve>
 #include <QGeoCoordinate>
@@ -19,3 +22,5 @@ private:
     QGeoCoordinate currentPosition;
     QEasingCurve easingCurve;
 };
+
+#endif // FLYINGOBJECT_H
