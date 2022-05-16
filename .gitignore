@@ -1,4 +1,5 @@
 *.o
+*.moc
 .qmake.stash
 Makefile
 copilot
