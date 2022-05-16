@@ -23,9 +23,11 @@ public:
     uint64_t *map(const char *);
 
 private:
+    bool		enabled;
     int			item;	// next available metric itemID
     void		*mapping;	// base of mmap content
     mmv_registry_t	*metrics;	// table of all metrics
+    uint64_t		unused;	// accessed if metrics disabled
 };
 
 #endif // MYMETRICS_H
