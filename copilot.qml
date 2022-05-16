@@ -45,7 +45,13 @@ Page {
 	}
 
         Component.onCompleted: {
+            altimu10.yawChanged.connect(headingChanged)
             gps.positionChanged.connect(positionChanged)
+        }
+
+        function headingChanged () {
+            // update the heading irrespecitve to viewPointGPS
+            gpsPlane.bearing = altimu10.yaw
         }
 
         function positionChanged () {
