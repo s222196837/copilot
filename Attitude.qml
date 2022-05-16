@@ -16,7 +16,7 @@ Item {
     property var pixelsPerDegree: 1.7
 
     function updateDisplay() {
-	var delta = pixelsPerDegree * pitch;
+	var delta = pixelsPerDegree * 1; //pitch;
 	var rollRadians = Math.PI * roll / 180.0;
 	faceDeltaX_new = delta * Math.sin(rollRadians);
 	faceDeltaY_new = delta * Math.cos(rollRadians);
@@ -38,7 +38,7 @@ Item {
 		transform: Rotation {
 		    origin.x: middle
 		    origin.y: middle
-		    angle: -roll
+		    angle: roll
 		}
 	    }
 
@@ -53,7 +53,7 @@ Item {
 		    Rotation {
 		        origin.x: middle
 		        origin.y: middle
-		        angle: -roll
+		        angle: roll
 		    },
 		    Translate {
 		        x: faceDeltaX_new - faceDeltaX_old
@@ -72,7 +72,7 @@ Item {
 		transform: Rotation {
 		    origin.x: middle
 		    origin.y: middle
-		    angle: -roll
+		    angle: roll
 		}
 	    }
 
@@ -93,7 +93,7 @@ Item {
 
         function updateAttitude() {
             pitch = altimu10.pitch;
-            roll = altimu10.roll;
+            roll = altimu10.roll - 180.0;
             updateDisplay();
         }
     }
