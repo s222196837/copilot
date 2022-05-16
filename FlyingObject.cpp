@@ -2,7 +2,7 @@
 
 #define ANIMATION_DURATION 1000
 
-FlyingObject::FlyingObject()
+FlyingObject::FlyingObject(): QObject()
 {
     easingCurve.setType(QEasingCurve::InOutQuad);
     easingCurve.setPeriod(ANIMATION_DURATION);
