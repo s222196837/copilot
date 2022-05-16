@@ -1,7 +1,7 @@
 #include "Buzzer.h"
 
 #define FAST_BEEP_TIME	0.1	// short sharp beep indicating lift
-#define LONG_BEEP_TIME	1.0	// 3 warning beeps, proximity alert
+#define LONG_BEEP_TIME	1.0	// 2 warning beeps, proximity alert
 
 Buzzer::Buzzer(QString program, MyMetrics *registry, bool debug):
 	volume(60), enabled(true), fastBeep(false), longBeep(false),
@@ -70,12 +70,13 @@ Buzzer::sendBeep(bool quick)
 {
     char	buffer[64];
     size_t	i, size, pulse = quick? 1 : 3;
+    int		level = quick? volume / 10.0 : volume;
 
     if (enabled == false)
 	return;
 
     size = snprintf(buffer, sizeof(buffer), "%f %d\n",
-		    quick? FAST_BEEP_TIME : LONG_BEEP_TIME, volume);
+		    quick? FAST_BEEP_TIME : LONG_BEEP_TIME, level);
     buffer[sizeof(buffer)-1] = '\0';
 
     for (i = 0; i < pulse; i++)
