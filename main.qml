@@ -79,10 +79,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: 168
-		Layout.minimumHeight: 168
-		Layout.preferredWidth: 168
-		Layout.preferredHeight: 168
+		Layout.minimumWidth: parent.height - 2
+		Layout.minimumHeight: parent.height - 2
+		Layout.preferredWidth: parent.height - 2
+		Layout.preferredHeight: parent.height - 2
                 Attitude {
 		    height: parent.height
 		    width: parent.width
@@ -93,10 +93,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: 168
-		Layout.minimumHeight: 168
-		Layout.preferredWidth: 168
-		Layout.preferredHeight: 168
+		Layout.minimumWidth: parent.height - 2
+		Layout.minimumHeight: parent.height - 2
+		Layout.preferredWidth: parent.height - 2
+		Layout.preferredHeight: parent.height - 2
                 Altimeter {
 		    height: parent.height
 		    width: parent.width
@@ -107,10 +107,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: 168
-		Layout.minimumHeight: 168
-		Layout.preferredWidth: 168
-		Layout.preferredHeight: 168
+		Layout.minimumWidth: parent.height - 2
+		Layout.minimumHeight: parent.height - 2
+		Layout.preferredWidth: parent.height - 2
+		Layout.preferredHeight: parent.height - 2
 		VerticalSpeed {
 		    height: parent.height
 		    width: parent.width
