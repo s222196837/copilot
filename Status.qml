@@ -2,53 +2,58 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 Label {
-    property var charge: 0
+    property var power: false
+    property var charge: 100
     property var volume: 11
-    property var gpsEnabled: 1
-    property var wifiEnabled: 1
+    property var gpsEnabled: true
+    property var wifiEnabled: false
+    property var soundEnabled: true
 
-    property var testPattern: true
-    property var end: "    "
+    property var testPattern: false
+    property var end: "   "
     property var br: "  "
 
     function gps() {
-        if (gpsEnabled == 1)
-            return "\uF107" // globe
-        return "\uF122"     // targeting
+        if (gpsEnabled)
+            return br + "\uF107" // globe
+        return "";
     }
 
     function wifi() {
-        if (wifiEnabled == 1)
-            return "\uF108" // signal
-        return "\uF140"     // clock
+        if (wifiEnabled)
+            return br + "\uF108" // signal
+        return "";
     }
 
     function sound() {
-        if (volume == 0)
-            return "\uF136" // no sound
+        if (!soundEnabled)
+            return br + "\uF136" // no sound
 	if (volume <= 5)
-            return "\uF137" // some sound
-        return "\uF138"     // full sound
+            return br + "\uF137" // some sound
+        return br + "\uF138"     // full sound
     }
 
     function battery() {
-        if (charge == 0)
-            return "\uF119" // battery empty
-        if (charge == 1)
-            return "\uF118" // battery one-quarter
-        if (charge == 2)
-            return "\uF117" // battery half
-        if (charge == 3)
-            return "\uF116" // battery three-quarters
-        if (charge == 4)
-            return "\uF115" // battery full
-        return "\uF114"     // battery charging
+        var icons = br
+        if (power)
+            icons = "\uF114" + br   // battery charging
+
+        if (charge < 15)
+            return icons + "\uF119" // battery empty
+        if (charge < 30)
+            return icons + "\uF118" // battery one-quarter
+        if (charge < 55)
+            return icons + "\uF117" // battery half
+        if (charge < 80)
+            return icons + "\uF116" // battery three-quarters
+
+        return icons + "\uF115"     // battery full
     }
 
     id: statusBar
     font.bold: true
     font.family: "myfontello"
-    text: gps() + br + wifi() + br + sound() + br + battery() + end
+    text: gps() + wifi() + sound() + battery() + end
 
     // Testing - once every interval, change status of all elements
 
