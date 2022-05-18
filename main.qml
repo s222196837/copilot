@@ -68,6 +68,7 @@ ApplicationWindow {
 
     footer: ToolBar {
 
+	id: toolBar
 	height: 170
 	width: parent.width
 	visible: true
@@ -79,10 +80,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: parent.height - 2
-		Layout.minimumHeight: parent.height - 2
-		Layout.preferredWidth: parent.height - 2
-		Layout.preferredHeight: parent.height - 2
+		Layout.minimumWidth: toolBar.height - 2
+		Layout.minimumHeight: toolBar.height - 2
+		Layout.preferredWidth: toolBar.height - 2
+		Layout.preferredHeight: toolBar.height - 2
                 Attitude {
 		    height: parent.height
 		    width: parent.width
@@ -93,10 +94,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: parent.height - 2
-		Layout.minimumHeight: parent.height - 2
-		Layout.preferredWidth: parent.height - 2
-		Layout.preferredHeight: parent.height - 2
+		Layout.minimumWidth: toolBar.height - 2
+		Layout.minimumHeight: toolBar.height - 2
+		Layout.preferredWidth: toolBar.height - 2
+		Layout.preferredHeight: toolBar.height - 2
                 Altimeter {
 		    height: parent.height
 		    width: parent.width
@@ -107,10 +108,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: parent.height - 2
-		Layout.minimumHeight: parent.height - 2
-		Layout.preferredWidth: parent.height - 2
-		Layout.preferredHeight: parent.height - 2
+		Layout.minimumWidth: toolBar.height - 2
+		Layout.minimumHeight: toolBar.height - 2
+		Layout.preferredWidth: toolBar.height - 2
+		Layout.preferredHeight: toolBar.height - 2
 		VerticalSpeed {
 		    height: parent.height
 		    width: parent.width
