@@ -9,7 +9,7 @@ SOURCES += \
 	main.cpp \
 	MyMetrics.cpp \
 	MySettings.cpp \
-	FlyingObject.cpp \
+	FlyingObjects.cpp \
 	Transmitter.cpp \
 	Receiver.cpp \
 	Altimu10.cpp \
@@ -21,7 +21,7 @@ SOURCES += \
 HEADERS += \
 	MyMetrics.h \
 	MySettings.h \
-	FlyingObject.h \
+	FlyingObjects.h \
 	Transmitter.h \
 	Receiver.h \
 	Altimu10.h \
@@ -39,3 +39,4 @@ disable-xcb {
     message("The disable-xcb option has been deprecated. Please use disable-desktop instead.")
     CONFIG += disable-desktop
 }
+#CONFIG+=qml_debug

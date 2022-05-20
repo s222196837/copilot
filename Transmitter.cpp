@@ -64,8 +64,8 @@ Transmitter::start(void)
 
     connect(&timer, &QTimer::timeout, this, &Transmitter::sendDatagram);
 
-    setTimeToLive((UFO_MSEC / 1000) * 10);
-    timer.start(UFO_MSEC);
+    setTimeToLive((UFO_PULSE / 1000) * 10);
+    timer.start(UFO_PULSE);
 }
 
 void
@@ -93,8 +93,10 @@ Transmitter::sendDatagram(void)
 
     encodeFlyingObject();
 
-    fprintf(stderr, "UDP pulse %llu [len=%zu]\n",
-		    (unsigned long long)*count, (size_t)broadcast.length());
+    IdentifiedFlyingObject *out = (IdentifiedFlyingObject *)broadcast.data();
+    fprintf(stderr, "UDP pulse %llu [len=%zu] identity=%s [len=%u/%zu]\n",
+		    (unsigned long long)*count, (size_t)broadcast.length(),
+		    out->identity, myself.identityLength, sizeof(IdentifiedFlyingObject));
     if (udpSocket4.writeDatagram(broadcast, groupAddress4, port) == broadcast.length()) {
     fprintf(stderr, "UDP pulse %llu done IPv4\n", (unsigned long long)*count);
 	if (metrics)
@@ -162,6 +164,8 @@ Transmitter::updateIdentity()
 
     // keep the final identity string locally in the object
     identity = name % separator % nick % separator % separator;
+    if (identity.length() >= UFO_MAXID)
+	identity.resize(UFO_MAXID - 1);
 
     // track the identity length in the protocol message structure
     myself.identityLength = identity.length() + 1;
@@ -177,10 +181,6 @@ Transmitter::updateIdentity()
 void
 Transmitter::encodeFlyingObject(void)
 {
-//  int c = *count;
-//  QByteArray datagram = "Multicast message " + QByteArray::number(c);
-//  broadcast = datagram;
-
     // Produce final (endian-safe) buffer contents
     broadcast.resize(myself.length1);
     IdentifiedFlyingObject *out = (IdentifiedFlyingObject *)broadcast.data();
@@ -188,6 +188,7 @@ Transmitter::encodeFlyingObject(void)
     // Strings first - these are endian neutral
     memcpy(out->magic, myself.magic, sizeof(out->magic));
     memcpy(out->identity, identity.toUtf8().constData(), identity.length());
+    out->identity[identity.length()] = '\0';
     memcpy(out->senderUUID, myself.senderUUID, sizeof(out->senderUUID));
     out->reservedPadding = 0;
 
@@ -197,7 +198,7 @@ Transmitter::encodeFlyingObject(void)
     qToLittleEndian(myself.identityLength, &out->identityLength);
     qToLittleEndian(myself.latitude, &out->latitude);
     qToLittleEndian(myself.longitude, &out->longitude);
-    qToLittleEndian(myself.heading, &out->heading);
     qToLittleEndian(myself.altitude, &out->altitude);
+    qToLittleEndian(myself.heading, &out->heading);
     qToLittleEndian(myself.length2, &out->length2);
 }

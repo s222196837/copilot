@@ -5,6 +5,7 @@
 
 #include "MyMetrics.h"
 #include "MySettings.h"
+#include "FlyingObjects.h"
 #include "Transmitter.h"
 #include "Receiver.h"
 #include "Altimu10.h"
@@ -46,6 +47,7 @@ main(int argc, char *argv[])
     Altimu10 altimu10("copilot-altimu10", &metrics, debug);
     Transmitter transmitter(&metrics, &settings, debug);
     Receiver receiver(&metrics, &settings, debug);
+    FlyingObjects gaggle(&gps, &buzzer, &receiver, debug);
 
     // instrumentation is available from now
     metrics.start();
@@ -57,6 +59,7 @@ main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("battery", &battery);
     engine.rootContext()->setContextProperty("altimu10", &altimu10);
     engine.rootContext()->setContextProperty("settings", &settings);
+    engine.rootContext()->setContextProperty("gaggle", &gaggle);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // hardware bringup

@@ -3,7 +3,7 @@
 
 #include <QtCore>
 #include <QtNetwork>
-#include "FlyingObject.h"
+#include "FlyingObjects.h"
 #include "MySettings.h"
 #include "MyMetrics.h"
 #include "Altimu10.h"
