@@ -14,6 +14,7 @@ Page {
     property variant viewPointGPS: true
     property variant viewPoint: torquay
     property variant viewPort: QtPositioning.rectangle(viewPoint, 0.008, 0.08)
+    property variant ufoIndex: 0	// between 0-3, used for avatar
 
     Map {
         id: gpsMap
@@ -25,36 +26,46 @@ Page {
 
         Plane {
             id: gpsPlane
-            // pilotName: "GPS"
             coordinate: gps.position
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: { viewPointGPS = true; } // reset after pan/zoom
 	    }
-
-            SequentialAnimation {
-                id: gpsPlaneAnimation
-                property real rotationDirection : 0;
-                NumberAnimation {
-                    target: gpsPlane; property: "bearing"; duration: 100
-                    easing.type: Easing.InOutQuad
-                    to: gpsPlaneAnimation.rotationDirection
-                }
-            }
 	}
 
         Component.onCompleted: {
             altimu10.yawChanged.connect(headingChanged)
             gps.positionChanged.connect(positionChanged)
+            gaggle.objectAppeared.connect(objectAppeared)
         }
 
-        function headingChanged () {
-            // update the heading irrespecitve to viewPointGPS
+        function objectAppeared(ufo) {
+            var component1 = Qt.createComponent("Plane.qml", gpsMap)
+            var plane = component1.createObject(gpsMap)
+            plane.ufo = ufo
+            plane.pilot = ufo.name
+	    plane.bearing = ufo.bearing
+	    plane.coordinate = ufo.coordinate
+            plane.avatar = 'pointer' + ufoIndex
+            ufoIndex = ufoIndex % 4; // prepare next avatar
+            gpsMap.addMapItem(plane)
+            ufo.headingChanged.connect(ufoHeadingChanged, plane)
+            ufo.positionChanged.connect(ufoPositionChanged, plane)
+        }
+
+        function ufoHeadingChanged(plane, ufo) {
+            plane.bearing = ufo.yaw
+        }
+        function ufoPositionChanged(plane, ufo) {
+            plane.position = ufo.position
+        }
+
+        function headingChanged() {
+            // update the heading irrespective to viewPointGPS
             gpsPlane.bearing = altimu10.yaw
         }
-
-        function positionChanged () {
+        function positionChanged() {
 	    if (viewPointGPS) {
                 viewPoint = gps.position;
 		var hOffset = gpsMap.zoomLevel / 1000.0;
