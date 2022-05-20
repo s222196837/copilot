@@ -10,7 +10,8 @@ SOURCES += \
 	MyMetrics.cpp \
 	MySettings.cpp \
 	FlyingObject.cpp \
-	Transponder.cpp \
+	Transmitter.cpp \
+	Receiver.cpp \
 	Altimu10.cpp \
 	Battery.cpp \
 	Buzzer.cpp \
@@ -21,7 +22,8 @@ HEADERS += \
 	MyMetrics.h \
 	MySettings.h \
 	FlyingObject.h \
-	Transponder.h \
+	Transmitter.h \
+	Receiver.h \
 	Altimu10.h \
 	Battery.h \
 	Buzzer.h \

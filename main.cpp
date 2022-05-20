@@ -5,7 +5,8 @@
 
 #include "MyMetrics.h"
 #include "MySettings.h"
-#include "Transponder.h"
+#include "Transmitter.h"
+#include "Receiver.h"
 #include "Altimu10.h"
 #include "Battery.h"
 #include "Buzzer.h"
@@ -43,7 +44,8 @@ main(int argc, char *argv[])
     Buzzer buzzer("copilot-buzzer", &metrics, debug);
     Battery battery("copilot-battery", &metrics, debug);
     Altimu10 altimu10("copilot-altimu10", &metrics, debug);
-    Transponder transponder(&metrics, &settings, debug);
+    Transmitter transmitter(&metrics, &settings, debug);
+    Receiver receiver(&metrics, &settings, debug);
 
     // instrumentation is available from now
     metrics.start();
@@ -58,11 +60,16 @@ main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // hardware bringup
-    //transponder.start();
     altimu10.start();
     battery.start();
     buzzer.start();
     gps.start();
+
+    // multicast networking bringup
+    transmitter.setSources(&gps, &altimu10);
+    receiver.setFilter(transmitter.device());
+    transmitter.start();
+    receiver.start();
 
     // main loop
     return app.exec();
