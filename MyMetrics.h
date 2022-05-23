@@ -15,19 +15,21 @@ public:
 
     // add() registers new metric definitions
     void add(const char *, const char *);
+    void addpct(const char *, const char *);
 
     // create memory mapped instrumentation file
     void start();
 
     // only map() metrics after start() - mmap offset
     uint64_t *map(const char *);
+    uint32_t *mappct(const char *);
 
 private:
     bool		enabled;
     int			item;	// next available metric itemID
     void		*mapping;	// base of mmap content
     mmv_registry_t	*metrics;	// table of all metrics
-    uint64_t		unused;	// accessed if metrics disabled
+    pmAtomValue		unused;	// accessed if metrics disabled
 };
 
 #endif // MYMETRICS_H

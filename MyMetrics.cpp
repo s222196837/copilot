@@ -2,7 +2,7 @@
 
 #define COPILOT_CLUSTER	42
 
-MyMetrics::MyMetrics(): QObject(), enabled(false), item(0), mapping(0), unused(0)
+MyMetrics::MyMetrics(): QObject(), enabled(false), item(0), mapping(0)
 {
     metrics = mmv_stats_registry("copilot", COPILOT_CLUSTER, MMV_FLAG_PROCESS);
 
@@ -11,6 +11,7 @@ MyMetrics::MyMetrics(): QObject(), enabled(false), item(0), mapping(0), unused(0
     } else {
 	fprintf(stderr, "%s: %s - %s\n",
 		"mmv_stats_registry", "copilot", strerror(errno));
+	memset(&unused, 0, sizeof(unused));
     }
 }
 
@@ -34,7 +35,23 @@ MyMetrics::add(const char *name, const char *help)
 		    MMV_UNITS(0,0,1,0,0,PM_COUNT_ONE), 0, help, NULL)) < 0) {
 	fprintf(stderr, "%s: %s - %s\n",
 		"mmv_stats_add_metric", "copilot", strerror(errno));
-	exit(1);
+	enabled = false;
+    }
+}
+
+void
+MyMetrics::addpct(const char *name, const char *help)
+{
+    if (enabled == false)
+	return;
+
+    // simple percent metrics only (no sets of values, percentage)
+    if ((mmv_stats_add_metric(metrics, name, item++,
+		    MMV_TYPE_U32, MMV_SEM_INSTANT,
+		    MMV_UNITS(0,0,0,0,0,0), 0, help, NULL)) < 0) {
+	fprintf(stderr, "%s: %s - %s\n",
+		"mmv_stats_add_metric", "copilot", strerror(errno));
+	enabled = false;
     }
 }
 
@@ -56,14 +73,32 @@ uint64_t *
 MyMetrics::map(const char *name)
 {
     if (enabled == false)
-	return &unused;
+	return &unused.ull;
 
     pmAtomValue	*value = mmv_lookup_value_desc(mapping, name, NULL);
 
     if (value == NULL) {
 	fprintf(stderr, "%s: %s - %s\n",
 			"mmv_lookup_value_desc", "copilot", strerror(errno));
+	enabled = false;
 	return NULL;
     }
     return &value->ull;
+}
+
+uint32_t *
+MyMetrics::mappct(const char *name)
+{
+    if (enabled == false)
+	return &unused.ul;
+
+    pmAtomValue	*value = mmv_lookup_value_desc(mapping, name, NULL);
+
+    if (value == NULL) {
+	fprintf(stderr, "%s: %s - %s\n",
+			"mmv_lookup_value_desc", "copilot", strerror(errno));
+	enabled = false;
+	return NULL;
+    }
+    return &value->ul;
 }

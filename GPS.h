@@ -33,10 +33,11 @@ private:
     FixSource *fixSource;
 
     bool diagnostics;	// output debugging information
-    bool success;
+    bool success; // was previous parsing attempt successful
     QString command;
 
     MyMetrics *metrics;
+    uint64_t *altitude;	// most recent sample
     uint64_t *errors;	// bad input counter
     uint64_t *count;	// success counter
 };

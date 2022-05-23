@@ -41,8 +41,9 @@ private:
     QString command;
 
     MyMetrics *metrics;
-    uint64_t *errors;
-    uint64_t *count;
+    uint32_t *percent;	// most recent sample
+    uint64_t *errors;	// errors parsing input
+    uint64_t *count;	// successful input recvd
 };
 
 #endif // BATTERY_H

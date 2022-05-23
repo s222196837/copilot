@@ -6,6 +6,7 @@ Battery::Battery(QString program, MyMetrics *registry, bool debug):
 	diagnostics(debug), success(false), command(program)
 {
     if ((metrics = registry) != NULL) {
+	metrics->addpct("battery.charge", "percent battery charge remaining");
 	metrics->add("battery.errors", "count of lines of bad battery data");
 	metrics->add("battery.count", "successfully read battery sensors");
     }
@@ -25,6 +26,7 @@ void
 Battery::start()
 {
     // prepare memory mapped metric pointers for live updating
+    percent = (uint32_t *)metrics->mappct("battery.charge");
     errors = (uint64_t *)metrics->map("battery.errors");
     count = (uint64_t *)metrics->map("battery.count");
 
@@ -67,6 +69,8 @@ Battery::parse(const char *line)
 	    emit statusChanged();
 	}
 	if (charge != newcharge) {
+	    if (metrics)
+		(*percent) = newcharge;
 	    charge = newcharge;
 	    emit chargeChanged();
 	}
