@@ -2,16 +2,15 @@
     <qresource prefix="/">
 	<file>main.qml</file>
 	<file>copilot.qml</file>
-	<file>Altimeter.qml</file>
-	<file>Airspeed.qml</file>
 	<file>Aircraft.qml</file>
+	<file>Airspeed.qml</file>
+	<file>Altimeter.qml</file>
 	<file>Attitude.qml</file>
 	<file>Pilot.qml</file>
 	<file>Plane.qml</file>
         <file>Proximity.qml</file>
         <file>Settings.qml</file>
 	<file>Status.qml</file>
-        <file>Tracking.qml</file>
 	<file>VerticalSpeed.qml</file>
 	<file>images/pointer.png</file>
 	<file>images/pointer0.png</file>

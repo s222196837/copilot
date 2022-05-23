@@ -163,14 +163,6 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
-            ItemDelegate {
-                text: qsTr("Flight Tracking")
-                width: parent.width
-                onClicked: {
-                    stackView.push("Tracking.qml")
-                    drawer.close()
-                }
-            }
         }
     }
 
