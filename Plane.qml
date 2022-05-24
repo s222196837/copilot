@@ -3,6 +3,7 @@ import QtLocation 5.15
 
 MapQuickItem {
     id: plane
+    property variant ufo
     property string avatar: "pointer"
     property string pilot: ""
     property int bearing: 0
