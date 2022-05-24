@@ -35,9 +35,6 @@ RESOURCES += qml.qrc
 target.path = $$[QT_INSTALL_EXAMPLES]/location/copilot
 INSTALLS += target
 
-disable-xcb {
-    message("The disable-xcb option has been deprecated. Please use disable-desktop instead.")
-    CONFIG += disable-desktop
-}
+CONFIG += disable-desktop
 #CONFIG+=qml_debug
-CONFIG+=debug
+#CONFIG+=debug
