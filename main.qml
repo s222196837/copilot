@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import QtLocation 5.15
+import QtQuick.VirtualKeyboard 2.1
 
 ApplicationWindow {
     property var copilot: "COPILOT"
@@ -169,6 +169,14 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    InputPanel {
+        id: keyboard
+	visible: active
+	anchors.left: parent.left
+	anchors.right: parent.right
+	anchors.bottom: parent.bottom
     }
 
     StackView {
