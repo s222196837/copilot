@@ -8,7 +8,6 @@ Item {
 
     property var roll: 0.0
     property var pitch: 0.0
-    property var testPattern: false
     property var faceDeltaX_new: 0.0
     property var faceDeltaX_old: 0.0
     property var faceDeltaY_new: 0.0
@@ -86,7 +85,7 @@ Item {
 	}
 
         Component.onCompleted: {
-	    if (testPattern == false) {
+	    if (settings.testsEnabled == false) {
                 altimu10.pitchChanged.connect(updateAttitude);
 	    }
         }
@@ -105,8 +104,8 @@ Item {
 	property var pitchDirection : 1.0
 
 	interval: 100
-	repeat: testPattern
-	running: testPattern
+	repeat: settings.testsEnabled
+	running: settings.testsEnabled
 
 	onTriggered: {
 	    // rotate (roll)

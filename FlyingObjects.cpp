@@ -1,12 +1,6 @@
 #include "FlyingObjects.h"
 #include <math.h>
 
-FlyingObjects::FlyingObjects(bool debug): diagnostics(debug), distance(UFO_ALERT)
-{
-    if (debug)
-	fprintf(stderr, "Created global FlyingObjects hash\n");
-}
-
 // The Receiver has detected either a new flying object or an
 // update to one we have seen before.  This does not include
 // ourself - that position update comes from the GPS.  Check
@@ -37,7 +31,9 @@ FlyingObjects::updateFlyingObject(QUuid uuid,
 void
 FlyingObjects::proximityCheckByCoordinate(QDateTime d, QGeoCoordinate self)
 {
-    (void)d;
+    if (diagnostics)
+	fprintf(stderr, "%s: time=%lld\n", __FUNCTION__, d.toSecsSinceEpoch());
+
     location = self;
     proximityCheck();
 }

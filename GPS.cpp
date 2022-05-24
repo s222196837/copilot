@@ -60,7 +60,7 @@ GPS::tryRead()
 	if (strncmp(bytes, "$GNGGA", 6) != 0)
 	    continue;
 
-	//if (diagnostics)
+	if (diagnostics)
 	    fprintf(stderr, "GPS: %s", bytes);
 
 	if (fixSource->parsePosInfoFromNmeaData(bytes, line.length(),

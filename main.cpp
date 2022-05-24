@@ -23,7 +23,7 @@ main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    bool debug = false;
+    bool debug = false, tests = false;
     // optionally increase console verbosity
     for (int i = 0; i < argc; i++) {
 	if (strcmp(argv[i], "-v") == 0 ||
@@ -31,6 +31,11 @@ main(int argc, char *argv[])
 	    strcmp(argv[i], "--verbose") == 0 ||
 	    strcmp(argv[i], "--diagnostics") == 0)
 	    debug = true;
+	if (strcmp(argv[i], "--test") == 0 ||
+	    strcmp(argv[i], "--tests") == 0 ||
+	    strcmp(argv[i], "--testing") == 0 ||
+	    strcmp(argv[i], "--test-pattern") == 0)
+	    tests = true;
     }
 
     QGuiApplication app(argc, argv);
@@ -40,7 +45,7 @@ main(int argc, char *argv[])
 	fprintf(stderr, "%s: Failed to load myfontello.ttf\n", "copilot");
 
     MyMetrics metrics;
-    MySettings settings;
+    MySettings settings(debug, tests);
     GPS gps("copilot-gps", &metrics, debug);
     Buzzer buzzer("copilot-buzzer", &metrics, &settings, debug);
     Battery battery("copilot-battery", &metrics, debug);

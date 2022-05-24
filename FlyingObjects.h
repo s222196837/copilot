@@ -74,7 +74,7 @@ class FlyingObjects : public QObject
     Q_OBJECT
 
 public:
-    FlyingObjects(bool);
+    FlyingObjects(bool debug): diagnostics(debug), distance(UFO_ALERT) { }
 
 public slots:
     void updateFlyingObject(QUuid, QString, quint64,

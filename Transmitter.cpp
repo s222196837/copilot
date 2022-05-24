@@ -51,13 +51,14 @@ Transmitter::start(void)
 	port = settings->proximityPort();
     }
 
-    //if (diagnostics)
-    fprintf(stderr, "Ready to multicast datagrams to %s ",
+    if (diagnostics) {
+	fprintf(stderr, "Ready to multicast datagrams to %s ",
 		    (const char *)groupAddress4.toString().toLatin1());
-    if (udpSocket6.state() == QAbstractSocket::BoundState)
-	fprintf(stderr, "and %s ",
+	if (udpSocket6.state() == QAbstractSocket::BoundState)
+	    fprintf(stderr, "and %s ",
 		    (const char *)groupAddress6.toString().toLatin1());
-    fprintf(stderr, "on port %d\n", port);
+	fprintf(stderr, "on port %d\n", port);
+    }
 
     updateIdentity();	// initialize, in the absense of any signals
 
@@ -87,22 +88,25 @@ void
 Transmitter::sendDatagram(void)
 {
     if (myself.timestamp == 0) {
-        fprintf(stderr, "Skip sending UDP pulse, no timestamp is set yet\n");
+	if (diagnostics)
+	    fprintf(stderr, "Skip sending UDP pulse, no timestamp yet\n");
 	return;
     }
 
     encodeFlyingObject();
 
     IdentifiedFlyingObject *out = (IdentifiedFlyingObject *)broadcast.data();
-    fprintf(stderr, "UDP pulse %llu [len=%zu] identity=%s [len=%u/%zu]\n",
+
+    if (diagnostics)
+	fprintf(stderr, "UDP pulse %llu [len=%zu] identity=%s [len=%u/%zu]\n",
 		    (unsigned long long)*count, (size_t)broadcast.length(),
-		    out->identity, myself.identityLength, sizeof(IdentifiedFlyingObject));
+		    out->identity, myself.identityLength,
+		    sizeof(IdentifiedFlyingObject));
+
     if (udpSocket4.writeDatagram(broadcast, groupAddress4, port) == broadcast.length()) {
-    fprintf(stderr, "UDP pulse %llu done IPv4\n", (unsigned long long)*count);
 	if (metrics)
 	    (*count)++;
     } else {
-    fprintf(stderr, "UDP pulse %llu fail IPv4\n", (unsigned long long)*count);
 	if (metrics)
 	    (*errors)++;
     }

@@ -21,6 +21,32 @@
 #define DEFAULT_TRACKING_KEY		"moc.24kcartevil.tset//:ptth"
 
 void
+MySettings::setDebugEnabled(bool enabled)
+{
+    diagnostics = enabled;
+    emit debugEnabledChanged();
+}
+
+bool
+MySettings::debugEnabled() const
+{
+    return diagnostics;
+}
+
+void
+MySettings::setTestsEnabled(bool enabled)
+{
+    testpattern = enabled;
+    emit testsEnabledChanged();
+}
+
+bool
+MySettings::testsEnabled() const
+{
+    return testpattern;
+}
+
+void
 MySettings::setPilotName(const QString &s)
 {
     setValue("pilot/name", s);

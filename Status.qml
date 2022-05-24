@@ -8,8 +8,6 @@ Label {
     property var gpsEnabled: true
     property var wifiEnabled: false
     property var soundEnabled: true
-
-    property var testPattern: false
     property var end: "   "
     property var br: "  "
 
@@ -64,8 +62,8 @@ Label {
 
         interval: 1000
 
-        repeat: testPattern
-        running: testPattern
+        repeat: settings.testsEnabled
+        running: settings.testsEnabled
 
 	onTriggered: {
 	    if (++count % 10 == 0) {

@@ -26,6 +26,9 @@ class MySettings : public QSettings
     Q_PROPERTY(QString trackingURL READ trackingURL WRITE setTrackingURL NOTIFY trackingURLChanged)
     Q_PROPERTY(QString trackingKey READ trackingKey WRITE setTrackingKey NOTIFY trackingKeyChanged)
 
+    Q_PROPERTY(bool debugEnabled READ debugEnabled WRITE setDebugEnabled NOTIFY debugEnabledChanged)
+    Q_PROPERTY(bool testsEnabled READ testsEnabled WRITE setTestsEnabled NOTIFY testsEnabledChanged)
+
 signals:
     void pilotNameChanged();
     void pilotNicknameChanged();
@@ -49,8 +52,12 @@ signals:
 
     void updatedProximityDistance(int);
 
+    void debugEnabledChanged();
+    void testsEnabledChanged();
+
 public:
-    MySettings(): QSettings() {}
+    MySettings(bool debug = false, bool tests = false):
+	QSettings(), diagnostics(debug), testpattern(tests) {}
 
     // pilot
     const QString pilotName() const;
@@ -101,6 +108,15 @@ public:
     void setTrackingURL(const QString &);
     const QString trackingKey() const;
     void setTrackingKey(const QString &);
+
+    bool debugEnabled() const;
+    void setDebugEnabled(bool);
+    bool testsEnabled() const;
+    void setTestsEnabled(bool);
+
+private:
+    bool diagnostics;
+    bool testpattern;
 };
 
 #endif // MYSETTINGS_H

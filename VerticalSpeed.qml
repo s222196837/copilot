@@ -7,7 +7,6 @@ Item {
     property var middle: length / 2
 
     property var climbRate: 0.0
-    property var testPattern: false
     property var lastAltitude: 0.0
     property var lastTimestamp: 0.0
     property var climbRateAngle: 0.0
@@ -54,7 +53,7 @@ Item {
 	}
 
         Component.onCompleted: {
-	    if (testPattern == false) {
+	    if (settings.testsEnabled == false) {
                 gps.positionChanged.connect(updateAltitude);
 	    }
         }
@@ -81,8 +80,8 @@ Item {
         property var climbRateDirection : 1.0
 
         interval: 100
-        repeat: testPattern
-        running: testPattern
+        repeat: settings.testsEnabled
+        running: settings.testsEnabled
 
         onTriggered: {
             // rotate (climb faster/slower)

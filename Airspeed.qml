@@ -7,7 +7,6 @@ Item {
     property var middle: length / 2
 
     property var airSpeed: 0.0
-    property var testPattern: false
     property var airSpeedAngle: 0.0
 
     Button {
@@ -54,8 +53,8 @@ Item {
 	property var airSpeedDirection : 1.0
 
 	interval: 100
-	repeat: testPattern
-	running: testPattern
+	repeat: settings.testsEnabled
+	running: settings.testsEnabled
 
 	onTriggered: {
 	    // rotate (airspeed increase/descrease)

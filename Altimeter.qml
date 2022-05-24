@@ -9,7 +9,6 @@ Item {
     property var altitude: 0.0
     property var pressure: 28.0
     property var minPressure: 28.0
-    property var testPattern: false
     property var angleHand1: 0.0
     property var angleHand2: 0.0
     property var angleFace1: 0.0
@@ -103,7 +102,7 @@ Item {
 	}
 
         Component.onCompleted: {
-	    if (testPattern == false) {
+	    if (settings.testsEnabled == false) {
                 gps.positionChanged.connect(updateAltitude);
                 altimu10.pressureChanged.connect(updatePressure);
 	    }
@@ -126,8 +125,8 @@ Item {
 	property var pressureDirection : 1.0
 
 	interval: 100
-	repeat: testPattern
-	running: testPattern
+	repeat: settings.testsEnabled
+	running: settings.testsEnabled
 
 	onTriggered: {
 	    // rotate (change altitude and/or pressure)

@@ -40,4 +40,4 @@ disable-xcb {
     CONFIG += disable-desktop
 }
 #CONFIG+=qml_debug
-#CONFIG+=debug
+CONFIG+=debug

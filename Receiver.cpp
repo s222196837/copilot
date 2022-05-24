@@ -38,13 +38,14 @@ Receiver::start(void)
     connect(&udpSocket6, &QUdpSocket::readyRead,
             this, &Receiver::processPendingDatagrams);
 
-    //if (diagnostics)
-    fprintf(stderr, "Ready to receive datagrams from %s ",
+    if (diagnostics) {
+	fprintf(stderr, "Ready to receive datagrams from %s ",
 		    (const char *)groupAddress4.toString().toLatin1());
-    if (udpSocket6.state() == QAbstractSocket::BoundState)
-	fprintf(stderr, "and %s ",
+	if (udpSocket6.state() == QAbstractSocket::BoundState)
+	    fprintf(stderr, "and %s ",
 		    (const char *)groupAddress6.toString().toLatin1());
-    fprintf(stderr, "on port %d\n", port);
+	fprintf(stderr, "on port %d\n", port);
+    }
 }
 
 void
@@ -76,7 +77,8 @@ Receiver::processPendingDatagrams(void)
 void
 Receiver::decodeFlyingObject(QByteArray &message, size_t length)
 {
-    fprintf(stderr, "UFO recv len=%zu\n", length);
+    if (diagnostics)
+	fprintf(stderr, "UFO recv len=%zu\n", length);
 
     IdentifiedFlyingObject *tmp, *ufo = (IdentifiedFlyingObject *)message.constData();
     static IdentifiedFlyingObject *object;
@@ -91,15 +93,17 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
     }
 
     if (length < sizeof(IdentifiedFlyingObject)) {
-	fprintf(stderr, "Bad UFO packet length received: %zu < %zu\n",
-		length, sizeof(IdentifiedFlyingObject));
+	if (diagnostics)
+	    fprintf(stderr, "Bad UFO packet length received: %zu < %zu\n",
+		    length, sizeof(IdentifiedFlyingObject));
 	if (metrics)
 	    (*corrupt)++;
 	return;
     }
     if (memcmp(ufo->magic, "UFOP", 4) != 0) {
-	fprintf(stderr, "Bad UFO packet magic received: %c%c%c%c\n",
-		ufo->magic[0], ufo->magic[1], ufo->magic[2], ufo->magic[3]);
+	if (diagnostics)
+	    fprintf(stderr, "Bad UFO packet magic received: %c%c%c%c\n",
+		    ufo->magic[0], ufo->magic[1], ufo->magic[2], ufo->magic[3]);
 	if (metrics)
 	    (*corrupt)++;
 	return;
@@ -127,16 +131,20 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
     // Before copying any strings, double check all lengths received
     if (ufo->length1 != ufo->length2 || ufo->length1 != length ||
 	length <= sizeof(IdentifiedFlyingObject)) {
-	fprintf(stderr, "Bad UFO packet length received: %u/%u vs %zu\n",
-		ufo->length1, ufo->length2, length - sizeof(IdentifiedFlyingObject));
+	if (diagnostics)
+	    fprintf(stderr, "Bad UFO packet length received: %u/%u vs %zu\n",
+		    ufo->length1, ufo->length2,
+		    length - sizeof(IdentifiedFlyingObject));
 	if (metrics)
 	    (*corrupt)++;
 	return;
     }
 
     if (object->identityLength != length - sizeof(IdentifiedFlyingObject)) {
-	fprintf(stderr, "Bad UFO identity length received: %u vs %zu\n",
-		object->identityLength, length - sizeof(IdentifiedFlyingObject));
+	if (diagnostics)
+	    fprintf(stderr, "Bad UFO identity length received: %u vs %zu\n",
+		    object->identityLength,
+		    length - sizeof(IdentifiedFlyingObject));
 	if (metrics)
 	    (*corrupt)++;
 	return;
@@ -144,15 +152,15 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
 
     // Finally check null termination on the identity string as well
     if (ufo->identity[object->identityLength-1] != '\0') {
-	fprintf(stderr, "Bad UFO packet identity terminal (%c)\n",
-		ufo->identity[length - sizeof(IdentifiedFlyingObject)]);
+	if (diagnostics)
+	    fprintf(stderr, "Bad UFO packet identity terminal (%c)\n",
+		    ufo->identity[length - sizeof(IdentifiedFlyingObject)]);
 	if (metrics)
 	    (*corrupt)++;
 	return;
     }
 
     memcpy(object->identity, ufo->identity, object->identityLength);
-fprintf(stderr, "GOT ID: %s\n", ufo->identity);
     memcpy(object->senderUUID, ufo->senderUUID, sizeof(object->senderUUID));
 
     QUuid uuid = QUuid::fromRfc4122((const char *)object->senderUUID);
@@ -170,7 +178,7 @@ fprintf(stderr, "GOT ID: %s\n", ufo->identity);
     else if (sender.size() >= 1 && sender.at(0).length() > 0)	// name
 	pilot = sender.takeAt(0);
 
-    // if (diagnostics)
+    if (diagnostics)
 	fprintf(stderr, "ID=%s[len=%d] time=%lldms heading=%f\n"
 			"latitude=%f longitude=%f altitude=%f\n",
 			(const char *)bytes.constData(), bytes.length(),
