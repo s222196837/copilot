@@ -41,7 +41,7 @@ private:
     QString command;
 
     MyMetrics *metrics;
-    uint32_t *percent;	// most recent sample
+    float *percent;	// most recent sample
     uint64_t *errors;	// errors parsing input
     uint64_t *count;	// successful input recvd
 };

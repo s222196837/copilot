@@ -6,6 +6,8 @@ Altimu10::Altimu10(QString program, MyMetrics *registry, bool debug):
 	diagnostics(debug), success(false), command(program)
 {
     if ((metrics = registry) != NULL) {
+	metrics->addf("altimu10.temperature", "most recent temperature sample");
+	metrics->addf("altimu10.pressure", "most recent pressure sample");
 	metrics->add("altimu10.errors", "count of lines of bad Altimu10 data");
 	metrics->add("altimu10.count", "successfully read Altimu10 sensors");
     }
@@ -25,8 +27,10 @@ void
 Altimu10::start()
 {
     // prepare memory mapped metric pointers for live updating
-    errors = (uint64_t *)metrics->map("altimu10.errors");
-    count = (uint64_t *)metrics->map("altimu10.count");
+    temperaturep = metrics->mapf("altimu10.temperature");
+    pressurep = metrics->mapf("altimu10.pressure");
+    errors = metrics->map("altimu10.errors");
+    count = metrics->map("altimu10.count");
 
     QProcess::start(command, QStringList());
 }
@@ -44,8 +48,11 @@ Altimu10::tryRead()
 	    if (metrics)
 		(*errors)++;
 	} else {
-	    if (metrics)
+	    if (metrics) {
+		(*temperaturep) = temperature;
+		(*pressurep) = pressure;
 		(*count)++;
+	    }
 	}
     }
 }

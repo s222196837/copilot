@@ -42,8 +42,8 @@ Transmitter::~Transmitter()
 void
 Transmitter::start(void)
 {
-    count = (uint64_t *)metrics->map("transmitter.count");
-    errors = (uint64_t *)metrics->map("transmitter.errors");
+    count = metrics->map("transmitter.count");
+    errors = metrics->map("transmitter.errors");
 
     if (settings) {
 	groupAddress4 = QHostAddress(settings->proximityIPv4());

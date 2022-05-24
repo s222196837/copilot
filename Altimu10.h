@@ -52,6 +52,8 @@ private:
     QString command;
 
     MyMetrics *metrics;
+    float *temperaturep;
+    float *pressurep;
     uint64_t *errors;
     uint64_t *count;
 };

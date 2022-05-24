@@ -39,7 +39,7 @@ private:
     QString command;
 
     MyMetrics *metrics;
-    uint64_t *altitude;	// most recent sample
+    float *altitude;	// most recent sample
     uint64_t *errors;	// bad input counter
     uint64_t *count;	// success counter
 };

@@ -20,7 +20,7 @@ GPS::GPS(QString program, MyMetrics *registry, bool debug):
     fixSource = new FixSource();
 
     if ((metrics = registry) != NULL) {
-	metrics->add("gps.altitude", "most recent altitude observation");
+	metrics->addf("gps.altitude", "most recent altitude sample");
 	metrics->add("gps.errors", "number of lines of bad GPS data");
 	metrics->add("gps.count", "successfully parsed NMEA strings");
     }
@@ -41,9 +41,9 @@ void
 GPS::start()
 {
     // prepare memory mapped metric pointers for live updating
-    altitude = (uint64_t *)metrics->map("gps.altitude");
-    errors = (uint64_t *)metrics->map("gps.errors");
-    count = (uint64_t *)metrics->map("gps.count");
+    altitude = metrics->mapf("gps.altitude");
+    errors = metrics->map("gps.errors");
+    count = metrics->map("gps.count");
 
     // start the GPS data harvesting process
     QProcess::start(command, QStringList());

@@ -33,8 +33,8 @@ void
 Buzzer::start()
 {
     // prepare memory mapped metric pointers for live updating
-    errors = (uint64_t *)metrics->map("battery.errors");
-    count = (uint64_t *)metrics->map("battery.count");
+    errors = metrics->map("battery.errors");
+    count = metrics->map("battery.count");
 
     QProcess::start(command, QStringList());
 }

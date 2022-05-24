@@ -40,14 +40,14 @@ MyMetrics::add(const char *name, const char *help)
 }
 
 void
-MyMetrics::addpct(const char *name, const char *help)
+MyMetrics::addf(const char *name, const char *help)
 {
     if (enabled == false)
 	return;
 
-    // simple percent metrics only (no sets of values, percentage)
+    // simple floating point metrics only (no sets, non-counter values)
     if ((mmv_stats_add_metric(metrics, name, item++,
-		    MMV_TYPE_U32, MMV_SEM_INSTANT,
+		    MMV_TYPE_FLOAT, MMV_SEM_INSTANT,
 		    MMV_UNITS(0,0,0,0,0,0), 0, help, NULL)) < 0) {
 	fprintf(stderr, "%s: %s - %s\n",
 		"mmv_stats_add_metric", "copilot", strerror(errno));
@@ -86,11 +86,11 @@ MyMetrics::map(const char *name)
     return &value->ull;
 }
 
-uint32_t *
-MyMetrics::mappct(const char *name)
+float *
+MyMetrics::mapf(const char *name)
 {
     if (enabled == false)
-	return &unused.ul;
+	return &unused.f;
 
     pmAtomValue	*value = mmv_lookup_value_desc(mapping, name, NULL);
 
@@ -100,5 +100,5 @@ MyMetrics::mappct(const char *name)
 	enabled = false;
 	return NULL;
     }
-    return &value->ul;
+    return &value->f;
 }

@@ -15,14 +15,14 @@ public:
 
     // add() registers new metric definitions
     void add(const char *, const char *);
-    void addpct(const char *, const char *);
+    void addf(const char *, const char *);
 
     // create memory mapped instrumentation file
     void start();
 
     // only map() metrics after start() - mmap offset
     uint64_t *map(const char *);
-    uint32_t *mappct(const char *);
+    float *mapf(const char *);
 
 private:
     bool		enabled;

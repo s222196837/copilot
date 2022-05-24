@@ -17,9 +17,9 @@ Receiver::Receiver(MyMetrics *registry, MySettings *config, bool debug):
 void
 Receiver::start(void)
 {
-    count = (uint64_t *)metrics->map("receiver.count");
-    errors = (uint64_t *)metrics->map("receiver.errors");
-    corrupt = (uint64_t *)metrics->map("receiver.corrupt");
+    count = metrics->map("receiver.count");
+    errors = metrics->map("receiver.errors");
+    corrupt = metrics->map("receiver.corrupt");
 
     if (settings) {
 	groupAddress4 = QHostAddress(settings->proximityIPv4());
