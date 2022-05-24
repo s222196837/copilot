@@ -12,7 +12,7 @@ class Receiver : public QObject
 
 public:
     Receiver(MyMetrics *registry = NULL, MySettings *config = NULL, bool debug = false);
-    void setFilter(QByteArray uuid) { device = uuid; }
+    void setFilter(QUuid uuid) { device = uuid; }
     void start();
     void stop();
 
@@ -40,7 +40,7 @@ private:
     uint64_t *errors;	/* networking errors on receive */
     uint64_t *corrupt;	/* corrupt datagrams received */
 
-    QByteArray device;	/* ignored entity (optional, self) */
+    QUuid device;	/* ignored entity (optional, self) */
 };
 
 #endif	/* RECEIVER_H */

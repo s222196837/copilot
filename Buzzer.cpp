@@ -66,6 +66,12 @@ Buzzer::setLongBeep(bool beep)
 }
 
 void
+Buzzer::alarm()
+{
+    setLongBeep(true);
+}
+
+void
 Buzzer::sendBeep(bool quick)
 {
     char	buffer[64];

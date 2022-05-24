@@ -73,6 +73,7 @@ Altimu10::parse(const char *line)
 	}
 	if (abs((int)(yaw - v[2])) > 1) {
 	    yaw = v[2];
+	    emit updatedHeading(yaw);
 	    emit yawChanged();
 	}
 	if (abs((int)(temperature - v[9])) > 0) {

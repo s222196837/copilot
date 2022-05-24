@@ -2,9 +2,10 @@
 #define FLYINGOBJECTS_H
 
 #include <QHash>
-#include "GPS.h"
-#include "Buzzer.h"
-#include "Receiver.h"
+#include <QUuid>
+#include <QObject>
+#include <QDateTime>
+#include <QGeoCoordinate>
 
 // Unidentified Flying Object Protocol (UFOP)
 typedef struct IdentifiedFlyingObject {		// Bytes|Details
@@ -73,20 +74,22 @@ class FlyingObjects : public QObject
     Q_OBJECT
 
 public:
-    FlyingObjects(GPS *, Buzzer *, Receiver *, bool);
+    FlyingObjects(bool);
+
+public slots:
+    void updateFlyingObject(QUuid, QString, quint64,
+			    double, double, double, double);
+    void proximityCheckByCoordinate(QDateTime, QGeoCoordinate);
+    void proximityCheck();
 
 signals:
     void objectAppeared(FlyingObject *);
-
-private slots:
-    void updateFlyingObject(QUuid, QString, quint64,
-			    double, double, double, double);
-    void proximityCheck();
+    void objectTooClose(FlyingObject *);
+    void alarm();
 
 private:
-    GPS *gps;
-    Buzzer *buzzer;
     QHash<QUuid, FlyingObject*> others;
+    QGeoCoordinate location;  // centre
     bool diagnostics;	// verbose mode
 };
 

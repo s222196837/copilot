@@ -68,11 +68,13 @@ GPS::tryRead()
 	    if (metrics)
 		(*errors)++;
 	} else {
+	    QGeoCoordinate coordinate = info.coordinate();
 	    if (metrics) {
-		(*altitude) = info.coordinate().altitude();
+		(*altitude) = coordinate.altitude();
 		(*count)++;
 	    }
-	    emit positionChanged();
+	    emit updatedCoordinate(coordinate);
+	    emit updatedPosition(info.timestamp(), coordinate);
 	}
     }
 }

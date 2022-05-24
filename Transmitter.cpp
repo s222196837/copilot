@@ -25,11 +25,10 @@ Transmitter::Transmitter(MyMetrics *registry, MySettings *config, bool debug):
     }
 
     /* Universally Unique ID for this transmitter (one aircraft) */
-    QUuid uuid;
-    uuid = uuid.createUuid();
-    hardware = uuid.toRfc4122();
+    hardware = hardware.createUuid();
+    QByteArray device = hardware.toRfc4122();
 
-    memcpy(myself.senderUUID, hardware.constData(), sizeof(myself.senderUUID));
+    memcpy(myself.senderUUID, device.constData(), sizeof(myself.senderUUID));
     myself.length1 = myself.length2 = sizeof(IdentifiedFlyingObject);
     memset(&myself.timestamp, 0, sizeof(myself.timestamp));
     memcpy(myself.magic, "UFOP", sizeof(myself.magic));
@@ -65,7 +64,8 @@ Transmitter::start(void)
     connect(&timer, &QTimer::timeout, this, &Transmitter::sendDatagram);
 
     setTimeToLive((UFO_PULSE / 1000) * 10);
-    timer.start(UFO_PULSE);
+    timer.setInterval(UFO_PULSE);
+    timer.start();
 }
 
 void
@@ -120,22 +120,8 @@ Transmitter::sendDatagram(void)
 }
 
 void
-Transmitter::setSources(GPS *gps, Altimu10 *altimu10)
+Transmitter::updatedPosition(QDateTime timestamp, QGeoCoordinate position)
 {
-    positionSource = gps;
-    connect(gps, &GPS::positionChanged, this, &Transmitter::updatePosition);
-
-    headingSource = altimu10;
-    connect(altimu10, &Altimu10::yawChanged, this, &Transmitter::updateHeading);
-}
-
-void
-Transmitter::updatePosition()
-{
-    const QDateTime timestamp = positionSource->getTimestamp();
-    const QGeoCoordinate position = positionSource->getPosition();
-
-fprintf(stderr, "Transmitter::updatePosition\n");
     myself.altitude = position.altitude();
     myself.latitude = position.latitude();
     myself.longitude = position.longitude();
@@ -143,27 +129,37 @@ fprintf(stderr, "Transmitter::updatePosition\n");
 }
 
 void
-Transmitter::updateHeading()
+Transmitter::updatedHeading(float heading)
 {
-fprintf(stderr, "Transmitter::updateHeading\n");
-    myself.heading = headingSource->getYaw();
+    myself.heading = heading;
+}
+
+void
+Transmitter::updatedIdentity(QString name, QString nick, QString rego)
+{
+    QChar separator = QChar('|');
+    identity = name % separator % nick % separator % rego % separator;
+    updateIdentity();
 }
 
 void
 Transmitter::updateIdentity()
 {
-    QString name, nick, rego;
-    QChar separator = QChar('|');
+    if (settings) {
+	QString name, nick, rego;
+	QChar separator = QChar('|');
 
-    name = settings->pilotName();
-    name.remove(separator);
-    nick = settings->pilotNickname();
-    nick.remove(separator);
-    rego = settings->pilotRegistration();
-    rego.remove(separator);
+	name = settings->pilotName();
+	name.remove(separator);
+	nick = settings->pilotNickname();
+	nick.remove(separator);
+	rego = settings->pilotRegistration();
+	rego.remove(separator);
+
+	identity = name % separator % nick % separator % rego % separator;
+    }
 
     // keep the final identity string locally in the object
-    identity = name % separator % nick % separator % separator;
     if (identity.length() >= UFO_MAXID)
 	identity.resize(UFO_MAXID - 1);
 

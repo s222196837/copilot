@@ -3,6 +3,8 @@
 
 #include <QtCore>
 #include <QtNetwork>
+#include <QDateTime>
+#include <QGeoLocation>
 #include "FlyingObjects.h"
 #include "MySettings.h"
 #include "MyMetrics.h"
@@ -19,13 +21,12 @@ public:
     void start();
     void stop();
 
-    void setSources(GPS *, Altimu10 *);
-    const QByteArray device() const { return hardware; }
+    const QUuid device() const { return hardware; }
 
 public slots:
-    void updatePosition();
-    void updateHeading();
-    void updateIdentity();
+    void updatedPosition(QDateTime, QGeoCoordinate);
+    void updatedHeading(float);
+    void updatedIdentity(QString, QString, QString);
 
 private slots:
     void setTimeToLive(int newTtl);
@@ -33,6 +34,7 @@ private slots:
 
 private:
     void encodeFlyingObject(void);
+    void updateIdentity();
 
     bool diagnostics;	// output debugging information
 
@@ -51,10 +53,7 @@ private:
     QString identity;
     IdentifiedFlyingObject myself; /* location/heading/identity detail */
     QByteArray broadcast;	/* preallocated buffer for broadcasting */
-    QByteArray hardware;	/* UUID string representing this device */
-
-    GPS *positionSource;
-    Altimu10 *headingSource;
+    QUuid hardware;
 };
 
 #endif	/* TRANSMITTER_H */

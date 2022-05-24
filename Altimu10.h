@@ -34,6 +34,8 @@ signals:
     void temperatureChanged();
     void pressureChanged();
 
+    void updatedHeading(float);
+
 protected:
     void tryRead();
     bool parse(const char *);

@@ -155,8 +155,7 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
 fprintf(stderr, "GOT ID: %s\n", ufo->identity);
     memcpy(object->senderUUID, ufo->senderUUID, sizeof(object->senderUUID));
 
-    QUuid uuid;
-    uuid.fromRfc4122((const char *)object->senderUUID);
+    QUuid uuid = QUuid::fromRfc4122((const char *)object->senderUUID);
     QByteArray bytes((const char *)object->identity);
     QString string(bytes);
 
@@ -178,6 +177,10 @@ fprintf(stderr, "GOT ID: %s\n", ufo->identity);
 			(long long) object->timestamp, object->heading,
 			object->latitude, object->longitude, object->altitude);
 
-    emit updateFlyingObject(uuid, pilot, object->timestamp, object->heading,
-			object->latitude, object->longitude, object->altitude);
+    // do not emit messages about our own local position updates
+    if (device.isNull() == false && uuid != device)
+	emit updateFlyingObject(uuid, pilot,
+			object->timestamp, object->heading,
+			object->latitude, object->longitude,
+			object->altitude);
 }

@@ -47,7 +47,14 @@ main(int argc, char *argv[])
     Altimu10 altimu10("copilot-altimu10", &metrics, debug);
     Transmitter transmitter(&metrics, &settings, debug);
     Receiver receiver(&metrics, &settings, debug);
-    FlyingObjects gaggle(&gps, &buzzer, &receiver, debug);
+
+    // hook up the hardware to the proxity checking module
+    FlyingObjects gaggle(debug);
+    gaggle.connect(&gps, &GPS::updatedPosition,
+            &gaggle, &FlyingObjects::proximityCheckByCoordinate);
+    gaggle.connect(&receiver, &Receiver::updateFlyingObject,
+            &gaggle, &FlyingObjects::updateFlyingObject);
+    gaggle.connect(&gaggle, &FlyingObjects::alarm, &buzzer, &Buzzer::alarm);
 
     // instrumentation is available from now
     metrics.start();
@@ -69,8 +76,11 @@ main(int argc, char *argv[])
     gps.start();
 
     // multicast networking bringup
-    transmitter.setSources(&gps, &altimu10);
     receiver.setFilter(transmitter.device());
+    transmitter.connect(&gps, &GPS::updatedPosition,
+	    &transmitter, &Transmitter::updatedPosition);
+    transmitter.connect(&altimu10, &Altimu10::updatedHeading,
+	    &transmitter, &Transmitter::updatedHeading);
     transmitter.start();
     receiver.start();
 

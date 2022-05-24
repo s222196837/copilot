@@ -27,6 +27,9 @@ public:
     bool getLongBeep() { return longBeep; }
     void setLongBeep(bool beep);
 
+public slots:
+    void alarm();
+
 signals:
     void volumeChanged();
     void enabledChanged();

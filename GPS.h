@@ -23,6 +23,8 @@ public:
     const QGeoCoordinate getPosition() { return info.coordinate(); }
 
 signals:
+    void updatedPosition(QDateTime, QGeoCoordinate);
+    void updatedCoordinate(QGeoCoordinate);
     void positionChanged();
 
 protected:

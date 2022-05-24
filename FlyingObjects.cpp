@@ -1,15 +1,10 @@
 #include "FlyingObjects.h"
 #include <math.h>
 
-FlyingObjects::FlyingObjects(GPS *primary, Buzzer *buzz, Receiver *receiver, bool debug): gps(primary), buzzer(buzz), diagnostics(debug)
+FlyingObjects::FlyingObjects(bool debug): diagnostics(debug)
 {
     if (debug)
 	fprintf(stderr, "Created global FlyingObjects hash\n");
-
-    connect(gps, &GPS::positionChanged,
-            this, &FlyingObjects::proximityCheck);
-    connect(receiver, &Receiver::updateFlyingObject,
-            this, &FlyingObjects::updateFlyingObject);
 }
 
 // The Receiver has detected either a new flying object or an
@@ -40,20 +35,27 @@ FlyingObjects::updateFlyingObject(QUuid uuid,
 }
 
 void
+FlyingObjects::proximityCheckByCoordinate(QDateTime d, QGeoCoordinate self)
+{
+    (void)d;
+    location = self;
+    proximityCheck();
+}
+
+void
 FlyingObjects::proximityCheck()
 {
-    QGeoCoordinate myself = gps->getPosition();
-    double myheight = myself.altitude();
+    double altitude = location.altitude();
 
     // iterate the hash and check how close every flying object is
     foreach (FlyingObject *object, others) {
 	double incoming = object->altitude();
-	if (fabs(myheight - incoming) > UFO_ALERT)
+	if (fabs(altitude - incoming) > UFO_ALERT)
 	    continue;
-	if (myself.distanceTo(object->coordinate()) > UFO_ALERT)
+	if (location.distanceTo(object->coordinate()) > UFO_ALERT)
 	    continue;
-	buzzer->setLongBeep(true);
-	break;	// only need to issue one warning, so break early
+	emit objectTooClose(object);
+	emit alarm();
     }
 }
 
