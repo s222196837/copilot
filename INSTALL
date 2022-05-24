@@ -16,7 +16,6 @@ RUNTIME
 COMPILE
 
 # apt-get install \
-	\
 	libi2c-dev \
 	libpcp3-dev \
 	libpcp-mmv1-dev \
@@ -34,12 +33,33 @@ COMPILE
 	qtpositioning5-dev \
 	qt5-qmake
 
+VIRTUAL KEYBOARD
+
+There is a problem with some RPi Qt package builds for Debian
+relating to the virtual keyboard.
+If you encounter these error messages when starting 'copilot',
+try the recipe below.
+
+	"qrc:/main.qml: Type InputPanel unavailable"
+	"qrc:/.../InputPanel.qml: Type Keyboard unavailable"
+
+# apt-get update
+# apt install git build-essential
+# apt-get install qtdeclarative5-dev libqt5svg5-dev qtbase5-private-dev qml-module-qtquick-controls2 qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel
+# apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
+> git clone -b 5.15 https://github.com/qt/qtvirtualkeyboard.git
+> cd qtvirtualkeyboard
+> qmake 
+> make
+# make install
+
+
 RASPBERRY PI SETUP
 
 GPS uses the built in UART on the RX/TX pins, and the Altimu-10
 uses I2C for serial communication.  Setup the following:
 
-# sudo raspi-config
+# raspi-config
 
 > Interfacing Options
 	> I2C
@@ -62,7 +82,7 @@ ALTIMU-10 SETUP
 
 > git clone https://github.com/natoscott/altimu10-ahrs
 > make
-> sudo make install
+# make install
 
 Once hardware is ready, run
 
@@ -75,7 +95,7 @@ Then verify
 
 METRICS SETUP
 
-> sudo chmod o+w,+t /var/lib/pcp/tmp/mmv
+# chmod o+w,+t /var/lib/pcp/tmp/mmv
 
 When ./copilot program is running live metrics will be available
 via PCP tools, eg.
