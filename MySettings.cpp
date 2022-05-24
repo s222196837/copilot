@@ -11,6 +11,8 @@
 #define DEFAULT_WIFI_NETWORK		"SkyFi"
 #define DEFAULT_WIFI_PASSPHRASE		"SkyFiiFykS"
 #define DEFAULT_PROXIMITY_ENABLED	false
+#define DEFAULT_PROXIMITY_AUDIBLE	true
+#define DEFAULT_PROXIMITY_DISTANCE	10
 #define DEFAULT_PROXIMITY_IPV4		"239.255.43.21"
 #define DEFAULT_PROXIMITY_IPV6		"ff12::2115"
 #define DEFAULT_PROXIMITY_PORT		42424
@@ -159,6 +161,32 @@ bool
 MySettings::proximityEnabled() const
 {
     return value("proximity/enabled", DEFAULT_PROXIMITY_ENABLED).toBool();
+}
+
+void
+MySettings::setProximityAudible(bool enabled)
+{
+    setValue("proximity/audible", enabled);
+    emit proximityAudibleChanged();
+}
+
+bool
+MySettings::proximityAudible() const
+{
+    return value("proximity/audible", DEFAULT_PROXIMITY_AUDIBLE).toBool();
+}
+
+void
+MySettings::setProximityDistance(int meters)
+{
+    setValue("proximity/distance", meters);
+    emit proximityDistanceChanged();
+}
+
+int
+MySettings::proximityDistance() const
+{
+    return value("proximity/distance", DEFAULT_PROXIMITY_DISTANCE).toInt();
 }
 
 void

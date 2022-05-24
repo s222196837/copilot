@@ -3,13 +3,19 @@
 #define FAST_BEEP_TIME	0.1	// short sharp beep indicating lift
 #define LONG_BEEP_TIME	1.0	// 2 warning beeps, proximity alert
 
-Buzzer::Buzzer(QString program, MyMetrics *registry, bool debug):
+Buzzer::Buzzer(QString program, MyMetrics *registry, MySettings *config, bool debug):
 	volume(60), enabled(true), fastBeep(false), longBeep(false),
-	diagnostics(debug), command(program)
+	settings(config), diagnostics(debug), audibleAlarm(true),
+	command(program)
 {
     if ((metrics = registry) != NULL) {
 	metrics->add("buzzer.errors", "count of failed buzzer commands");
 	metrics->add("buzzer.count", "successfully sent buzzer commands");
+    }
+
+    if (config) {
+	connect(config, &MySettings::proximityAudibleChanged,
+			this, &Buzzer::updateAudibleAlarm);
     }
 
     connect(this, &QProcess::errorOccurred, this, &Buzzer::errorOccurred);
@@ -19,7 +25,7 @@ Buzzer::~Buzzer()
 {
     if (state() != QProcess::NotRunning) {
 	kill(); // self-termination signal
-	waitForFinished(5); // msec units
+	waitForFinished(25); // msec units
     }
 }
 
@@ -60,9 +66,18 @@ Buzzer::setFastBeep(bool beep)
 void
 Buzzer::setLongBeep(bool beep)
 {
+    if (audibleAlarm == false)
+	return;
     longBeep = beep;	// track most recent beep style
     fastBeep = !beep;
     sendBeep(false);
+}
+
+void
+Buzzer::updateAudibleAlarm()
+{
+    if (settings)
+	audibleAlarm = settings->proximityAudible();
 }
 
 void

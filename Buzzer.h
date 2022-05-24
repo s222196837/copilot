@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include "MyMetrics.h"
+#include "MySettings.h"
 
 class Buzzer : public QProcess
 {
@@ -13,7 +14,7 @@ class Buzzer : public QProcess
     Q_PROPERTY(bool longBeep READ getLongBeep WRITE setLongBeep NOTIFY soundEmitted)
 
 public:
-    Buzzer(QString program, MyMetrics *registry = NULL, bool debug = false);
+    Buzzer(QString program, MyMetrics *registry = NULL, MySettings *config = NULL, bool debug = false);
     ~Buzzer();
 
     void start();
@@ -29,6 +30,7 @@ public:
 
 public slots:
     void alarm();
+    void updateAudibleAlarm();
 
 signals:
     void volumeChanged();
@@ -45,7 +47,9 @@ private:
     bool fastBeep;
     bool longBeep;
 
+    MySettings *settings;
     bool diagnostics;	// output debugging information
+    bool audibleAlarm;
     QString command;
 
     MyMetrics *metrics;

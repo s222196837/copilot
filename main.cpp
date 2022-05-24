@@ -42,7 +42,7 @@ main(int argc, char *argv[])
     MyMetrics metrics;
     MySettings settings;
     GPS gps("copilot-gps", &metrics, debug);
-    Buzzer buzzer("copilot-buzzer", &metrics, debug);
+    Buzzer buzzer("copilot-buzzer", &metrics, &settings, debug);
     Battery battery("copilot-battery", &metrics, debug);
     Altimu10 altimu10("copilot-altimu10", &metrics, debug);
     Transmitter transmitter(&metrics, &settings, debug);

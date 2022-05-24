@@ -20,6 +20,8 @@ class MySettings : public QSettings
     Q_PROPERTY(QString proximityIPv4 READ proximityIPv4 WRITE setProximityIPv4 NOTIFY proximityIPv4Changed)
     Q_PROPERTY(QString proximityIPv6 READ proximityIPv6 WRITE setProximityIPv6 NOTIFY proximityIPv6Changed)
     Q_PROPERTY(int proximityPort READ proximityPort WRITE setProximityPort NOTIFY proximityPortChanged)
+    Q_PROPERTY(bool proximityAudible READ proximityAudible WRITE setProximityAudible NOTIFY proximityAudibleChanged)
+    Q_PROPERTY(int proximityDistance READ proximityDistance WRITE setProximityDistance NOTIFY proximityDistanceChanged)
     Q_PROPERTY(bool trackingEnabled READ trackingEnabled WRITE setTrackingEnabled NOTIFY trackingEnabledChanged)
     Q_PROPERTY(QString trackingURL READ trackingURL WRITE setTrackingURL NOTIFY trackingURLChanged)
     Q_PROPERTY(QString trackingKey READ trackingKey WRITE setTrackingKey NOTIFY trackingKeyChanged)
@@ -36,6 +38,8 @@ signals:
     void wifiNetworkChanged();
     void wifiPassphraseChanged();
     void proximityEnabledChanged();
+    void proximityAudibleChanged();
+    void proximityDistanceChanged();
     void proximityIPv4Changed();
     void proximityIPv6Changed();
     void proximityPortChanged();
@@ -77,6 +81,10 @@ public:
     // proximity
     bool proximityEnabled() const;
     void setProximityEnabled(bool);
+    bool proximityAudible() const;
+    void setProximityAudible(bool);
+    int proximityDistance() const;
+    void setProximityDistance(int);
     const QString proximityIPv4() const;
     void setProximityIPv4(const QString &);
     const QString proximityIPv6() const;

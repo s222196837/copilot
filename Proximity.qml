@@ -33,23 +33,50 @@ Rectangle {
 
                 Switch {
                     id: proximityEnabledField
-                    text: "Proximity Monitoring"
+                    text: "Monitoring"
                     font.pixelSize: 20
                     checked: settings.proximityEnabled
                     onToggled: {
                         var enabled = proximityEnabledField.checked;
-                        ufoIPv4GroupLabel.enabled = enabled;
-                        ufoIPv4GroupField.enabled = enabled;
-                        ufoIPv6GroupLabel.enabled = enabled;
-                        ufoIPv6GroupField.enabled = enabled;
+                        proximityAudibleField.enabled = enabled;
+                        ufoDistanceLabel.enabled = enabled;
+                        ufoDistanceField.enabled = enabled;
                         ufoPortLabel.enabled = enabled;
                         ufoPortField.enabled = enabled;
                         settings.proximityEnabled = enabled;
                     }
                 }
+                Switch {
+                    id: proximityAudibleField
+                    text: "Audible Alarm"
+                    font.pixelSize: 20
+                    enabled: settings.proximityEnabled
+                    checked: settings.proximityAudible
+                    onToggled: {
+                        var enabled = proximityAudibleField.checked;
+                        settings.proximityAudible = enabled;
+                    }
+                }
+                Label {
+                    id: ufoDistanceLabel
+                    text: "Distance (meters)"
+                    font.pixelSize: 22
+                    enabled: settings.proximityEnabled
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                TextField {
+                    id: ufoDistanceField
+                    width: parent.width
+                    text: settings.proximityDistance
+                    font.pixelSize: 20
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    enabled: settings.proximityEnabled
+                    onAccepted: ufoPortField.focus = true
+                    onTextEdited: settings.proximityDistance = text
+                }
                 Label {
                     id: ufoPortLabel
-                    text: "UDP Multicast Port Number"
+                    text: "Multicast Port (1000-65535)"
                     font.pixelSize: 22
                     enabled: settings.proximityEnabled
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -61,9 +88,11 @@ Rectangle {
                     font.pixelSize: 20
                     inputMethodHints: Qt.ImhDigitsOnly
                     enabled: settings.proximityEnabled
-                    onAccepted: ufoIPv4GroupField.focus = true
+                    onAccepted: ufoDistanceField.focus = true
                     onTextEdited: settings.proximityPort = text
                 }
+
+/* -- for developers, not end users --
                 Label {
                     id: ufoIPv4GroupLabel
                     text: "UDP IPv4 Group Address"
@@ -77,7 +106,6 @@ Rectangle {
                     text: settings.proximityIPv4
                     font.pixelSize: 20
                     enabled: settings.proximityEnabled
-                    onAccepted: ufoIPv6GroupField.focus = true
                     onTextEdited: settings.proximityIPv4 = text
                 }
                 Label {
@@ -93,9 +121,9 @@ Rectangle {
                     text: settings.proximityIPv6
                     font.pixelSize: 20
                     enabled: settings.proximityEnabled
-                    onAccepted: ufoPortField.focus = true
                     onTextEdited: settings.proximityIPv6 = text
                 }
+*/
             }
         }
     }
