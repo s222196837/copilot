@@ -36,6 +36,7 @@ ApplicationWindow {
             font.pixelSize: Qt.application.font.pixelSize * 1.6
             onClicked: {
                 if (stackView.depth > 1) {
+                    instruments.visible = true
                     stackView.pop()
                 } else {
                     drawer.open()
@@ -68,7 +69,7 @@ ApplicationWindow {
 
     footer: ToolBar {
 
-	id: toolBar
+	id: instruments
 	height: 170
 	width: parent.width
 	visible: true
@@ -80,10 +81,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: toolBar.height - 2
-		Layout.minimumHeight: toolBar.height - 2
-		Layout.preferredWidth: toolBar.height - 2
-		Layout.preferredHeight: toolBar.height - 2
+		Layout.minimumWidth: instruments.height - 2
+		Layout.minimumHeight: instruments.height - 2
+		Layout.preferredWidth: instruments.height - 2
+		Layout.preferredHeight: instruments.height - 2
                 Attitude {
 		    height: parent.height
 		    width: parent.width
@@ -94,10 +95,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: toolBar.height - 2
-		Layout.minimumHeight: toolBar.height - 2
-		Layout.preferredWidth: toolBar.height - 2
-		Layout.preferredHeight: toolBar.height - 2
+		Layout.minimumWidth: instruments.height - 2
+		Layout.minimumHeight: instruments.height - 2
+		Layout.preferredWidth: instruments.height - 2
+		Layout.preferredHeight: instruments.height - 2
                 Altimeter {
 		    height: parent.height
 		    width: parent.width
@@ -108,10 +109,10 @@ ApplicationWindow {
 	    Rectangle {
 		color: dashColor
 		Layout.fillWidth: true
-		Layout.minimumWidth: toolBar.height - 2
-		Layout.minimumHeight: toolBar.height - 2
-		Layout.preferredWidth: toolBar.height - 2
-		Layout.preferredHeight: toolBar.height - 2
+		Layout.minimumWidth: instruments.height - 2
+		Layout.minimumHeight: instruments.height - 2
+		Layout.preferredWidth: instruments.height - 2
+		Layout.preferredHeight: instruments.height - 2
 		VerticalSpeed {
 		    height: parent.height
 		    width: parent.width
@@ -136,6 +137,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.push("Pilot.qml")
+                    instruments.visible = false
                     drawer.close()
                 }
             }
@@ -144,6 +146,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.push("Aircraft.qml")
+                    instruments.visible = false
                     drawer.close()
                 }
             }
@@ -152,6 +155,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.push("Settings.qml")
+                    instruments.visible = false
                     drawer.close()
                 }
             }
@@ -160,6 +164,7 @@ ApplicationWindow {
                 width: parent.width
                 onClicked: {
                     stackView.push("Proximity.qml")
+                    instruments.visible = false
                     drawer.close()
                 }
             }
