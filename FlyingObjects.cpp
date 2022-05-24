@@ -1,7 +1,7 @@
 #include "FlyingObjects.h"
 #include <math.h>
 
-FlyingObjects::FlyingObjects(bool debug): diagnostics(debug)
+FlyingObjects::FlyingObjects(bool debug): diagnostics(debug), distance(UFO_ALERT)
 {
     if (debug)
 	fprintf(stderr, "Created global FlyingObjects hash\n");
@@ -43,6 +43,12 @@ FlyingObjects::proximityCheckByCoordinate(QDateTime d, QGeoCoordinate self)
 }
 
 void
+FlyingObjects::updatedProximityDistance(int meters)
+{
+    distance = meters;
+}
+
+void
 FlyingObjects::proximityCheck()
 {
     double altitude = location.altitude();
@@ -50,9 +56,9 @@ FlyingObjects::proximityCheck()
     // iterate the hash and check how close every flying object is
     foreach (FlyingObject *object, others) {
 	double incoming = object->altitude();
-	if (fabs(altitude - incoming) > UFO_ALERT)
+	if (fabs(altitude - incoming) > distance)
 	    continue;
-	if (location.distanceTo(object->coordinate()) > UFO_ALERT)
+	if (location.distanceTo(object->coordinate()) > distance)
 	    continue;
 	emit objectTooClose(object);
 	emit alarm();

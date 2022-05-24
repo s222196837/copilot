@@ -47,6 +47,8 @@ signals:
     void trackingURLChanged();
     void trackingKeyChanged();
 
+    void updatedProximityDistance(int);
+
 public:
     MySettings(): QSettings() {}
 

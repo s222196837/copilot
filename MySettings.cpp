@@ -180,6 +180,7 @@ void
 MySettings::setProximityDistance(int meters)
 {
     setValue("proximity/distance", meters);
+    emit updatedProximityDistance(meters);
     emit proximityDistanceChanged();
 }
 

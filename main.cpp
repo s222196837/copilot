@@ -52,6 +52,8 @@ main(int argc, char *argv[])
     FlyingObjects gaggle(debug);
     gaggle.connect(&gps, &GPS::updatedPosition,
             &gaggle, &FlyingObjects::proximityCheckByCoordinate);
+    gaggle.connect(&settings, &MySettings::updatedProximityDistance,
+            &gaggle, &FlyingObjects::updatedProximityDistance);
     gaggle.connect(&receiver, &Receiver::updateFlyingObject,
             &gaggle, &FlyingObjects::updateFlyingObject);
     gaggle.connect(&gaggle, &FlyingObjects::alarm, &buzzer, &Buzzer::alarm);

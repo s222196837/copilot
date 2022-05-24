@@ -80,6 +80,7 @@ public slots:
     void updateFlyingObject(QUuid, QString, quint64,
 			    double, double, double, double);
     void proximityCheckByCoordinate(QDateTime, QGeoCoordinate);
+    void updatedProximityDistance(int);
     void proximityCheck();
 
 signals:
@@ -91,6 +92,7 @@ private:
     QHash<QUuid, FlyingObject*> others;
     QGeoCoordinate location;  // centre
     bool diagnostics;	// verbose mode
+    int distance;	// alarm meters
 };
 
 #endif // FLYINGOBJECTS_H
