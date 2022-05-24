@@ -17,7 +17,7 @@ Rectangle {
 
         ScrollBar.vertical: ScrollBar {}
 
-        MouseArea  {
+        MouseArea {
             id: content
             width: flickable.width
             height: textEditors.height + 24
