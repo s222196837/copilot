@@ -14,7 +14,7 @@ Page {
     property variant viewPointGPS: true
     property variant viewPoint: torquay
     property variant viewPort: QtPositioning.rectangle(viewPoint, 0.008, 0.08)
-    property variant ufoIndex: 0	// between 0-3, used for avatar
+    property variant ufoIndex: 0        // between 0-3, used for avatar
 
     Map {
         id: gpsMap
@@ -31,11 +31,11 @@ Page {
             MouseArea {
                 anchors.fill: parent
                 onClicked: { viewPointGPS = true; } // reset after pan/zoom
-	    }
-	}
+            }
+        }
 
         Component.onCompleted: {
-            altimu10.yawChanged.connect(headingChanged)
+            altimu10.yawChanged.connect(bearingChanged)
             gps.positionChanged.connect(positionChanged)
             gaggle.objectAppeared.connect(objectAppeared)
         }
@@ -45,42 +45,42 @@ Page {
             var plane = component1.createObject(gpsMap)
             plane.ufo = ufo
             plane.pilot = ufo.name
-	    plane.bearing = ufo.bearing
-	    plane.coordinate = ufo.coordinate
+            plane.bearing = ufo.bearing
+            plane.coordinate = ufo.coordinate
             plane.avatar = 'pointer' + ufoIndex
             ufoIndex = ufoIndex % 4; // prepare next avatar
             gpsMap.addMapItem(plane)
-            ufo.headingChanged.connect(ufoHeadingChanged, plane)
+            ufo.bearingChanged.connect(ufoBearingChanged, plane)
             ufo.positionChanged.connect(ufoPositionChanged, plane)
         }
 
-        function ufoHeadingChanged(plane, ufo) {
+        function ufoBearingChanged(plane, ufo) {
             plane.bearing = ufo.yaw
         }
         function ufoPositionChanged(plane, ufo) {
             plane.position = ufo.position
         }
 
-        function headingChanged() {
-            // update the heading irrespective to viewPointGPS
+        function bearingChanged() {
+            // update the heading irrespective of viewPointGPS
             gpsPlane.bearing = altimu10.yaw
         }
         function positionChanged() {
-	    if (viewPointGPS) {
+            if (viewPointGPS) {
                 viewPoint = gps.position;
-		var hOffset = gpsMap.zoomLevel / 1000.0;
-		var vOffset = gpsMap.zoomLevel / 100.0;
+                var hOffset = gpsMap.zoomLevel / 1000.0;
+                var vOffset = gpsMap.zoomLevel / 100.0;
                 viewPoint.latitude -= (vOffset * 0.2);
                 viewPort = QtPositioning.rectangle(viewPoint, hOffset, vOffset);
-	    }
+            }
         }
 
-	// block updates from GPS during interaction
-	gesture.onPanStarted: { viewPointGPS = false; }
-	gesture.onTiltStarted: { viewPointGPS = false; }
-	gesture.onFlickStarted: { viewPointGPS = false; }
-	gesture.onPinchStarted: { viewPointGPS = false; }
-	gesture.onRotationStarted: { viewPointGPS = false; }
+        // block updates from GPS during interaction
+        gesture.onPanStarted: { viewPointGPS = false; }
+        gesture.onTiltStarted: { viewPointGPS = false; }
+        gesture.onFlickStarted: { viewPointGPS = false; }
+        gesture.onPinchStarted: { viewPointGPS = false; }
+        gesture.onRotationStarted: { viewPointGPS = false; }
 
         visibleRegion: viewPort
     }
