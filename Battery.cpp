@@ -1,8 +1,9 @@
 #include <QTextStream>
 #include "Battery.h"
 
-Battery::Battery(QString program, MyMetrics *registry, bool debug):
-	charge(0), status(false), powered(false),
+Battery::Battery(QString program,
+	MyMetrics *registry, MySettings *config, bool debug):
+	charge(0), status(false), powered(false), settings(config),
 	diagnostics(debug), success(false), command(program)
 {
     if ((metrics = registry) != NULL) {

@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include "MyMetrics.h"
+#include "MySettings.h"
 
 class Battery : public QProcess
 {
@@ -12,7 +13,10 @@ class Battery : public QProcess
     Q_PROPERTY(bool powered READ getPowered NOTIFY poweredChanged)
 
 public:
-    Battery(QString program, MyMetrics *registry = NULL, bool debug = false);
+    Battery(QString program,
+	    MyMetrics *registry = NULL,
+	    MySettings *config = NULL,
+	    bool debug = false);
     ~Battery();
 
     void start();
@@ -36,6 +40,7 @@ private:
     bool status;
     bool powered;
 
+    MySettings *settings;
     bool diagnostics;	// output debugging information
     bool success; // was previous parsing attempt successful
     QString command;

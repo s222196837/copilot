@@ -3,6 +3,7 @@
 
 #include <QProcess>
 #include "MyMetrics.h"
+#include "MySettings.h"
 
 class Altimu10 : public QProcess
 {
@@ -14,11 +15,13 @@ class Altimu10 : public QProcess
     Q_PROPERTY(float temperature READ getTemperature NOTIFY temperatureChanged)
 
 public:
-    Altimu10(QString program, MyMetrics *registry = NULL, bool debug = false);
+    Altimu10(QString program,
+	     MyMetrics *registry = NULL,
+	     MySettings *config = NULL,
+	     bool debug = false);
     ~Altimu10();
 
     void start();
-
     bool valid() { return success; }
 
     float getPitch() { return pitch; }
@@ -28,34 +31,50 @@ public:
     float getPressure() { return pressure; }
 
 signals:
+    void updatedHeading(float);
     void pitchChanged();
     void rollChanged();
     void yawChanged();
     void temperatureChanged();
     void pressureChanged();
 
-    void updatedHeading(float);
-
 protected:
     void tryRead();
     bool parse(const char *);
+    void timerEvent(QTimerEvent*) override;
 
 private:
+    float temperature;
+    float pressure;
     float pitch;
     float roll;
     float yaw;
-    float temperature;
-    float pressure;
 
+    MySettings *settings;
     bool diagnostics;	// output debugging information
     bool success; // was previous parsing attempt successful
     QString command;
 
+    // internal tests
+    int temperatureDirection;
+    int pressureDirection;
+    int pitchDirection;
+    int rollDirection;
+    int yawDirection;
+    int temperatureDelta;
+    int pressureDelta;
+    int pitchDelta;
+    int rollDelta;
+    int yawDelta;
+    int shortTimer;
+    int longTimer;
+
+    // instrumentation
     MyMetrics *metrics;
-    float *temperaturep;
-    float *pressurep;
-    uint64_t *errors;
-    uint64_t *count;
+    float *temperaturep;	// most recent sample
+    float *pressurep;	// most recent sample
+    uint64_t *errors;	// bad input counter
+    uint64_t *count;	// success counter
 };
 
 #endif // ALTIMU10_H

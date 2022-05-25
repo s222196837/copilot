@@ -14,13 +14,6 @@ Item {
     property var faceDeltaY_old: 0.0
     property var pixelsPerDegree: 1.7
 
-    function updateDisplay() {
-	var delta = pixelsPerDegree * 1; //pitch;
-	var rollRadians = Math.PI * roll / 180.0;
-	faceDeltaX_new = delta * Math.sin(rollRadians);
-	faceDeltaY_new = delta * Math.cos(rollRadians);
-    }
-
     Button {
 	background: Rectangle {
 	    id: background
@@ -85,40 +78,16 @@ Item {
 	}
 
         Component.onCompleted: {
-	    if (settings.testsEnabled == false) {
-                altimu10.pitchChanged.connect(updateAttitude);
-	    }
+            altimu10.pitchChanged.connect(updateAttitude);
         }
 
         function updateAttitude() {
-            pitch = altimu10.pitch;
+            pitch = (altimu10.pitch - 75.0) / 8.0;
             roll = altimu10.roll - 180.0;
-            updateDisplay();
+	    var rollRadians = Math.PI * roll / 180.0;
+	    var delta = pixelsPerDegree * pitch;
+	    faceDeltaX_new = delta * Math.sin(rollRadians);
+	    faceDeltaY_new = delta * Math.cos(rollRadians);
         }
-    }
-
-    // Testing - once every interval, induce constant pitch and roll
-
-    Timer {
-	property var rollDirection : 1.0
-	property var pitchDirection : 1.0
-
-	interval: 100
-	repeat: settings.testsEnabled
-	running: settings.testsEnabled
-
-	onTriggered: {
-	    // rotate (roll)
-	    roll += (1.0 * rollDirection);
-	    if (roll <= 0.0 || roll >= 360.0) {
-		rollDirection *= -1.0;
-	    }
-	    // translate (pitch)
-	    pitch += (1.0 * pitchDirection);
-	    if (pitch <= -10.0 || pitch >= 10.0) {
-		pitchDirection *= -1.0;
-	    }
-	    updateDisplay();
-	}
     }
 }

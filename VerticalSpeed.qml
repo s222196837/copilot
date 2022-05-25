@@ -11,10 +11,6 @@ Item {
     property var lastTimestamp: 0.0
     property var climbRateAngle: 0.0
 
-    function updateDisplay() {
-        climbRateAngle = climbRate * 0.086;
-    }
-
     Button {
 	background: Rectangle {
 	    id: background
@@ -53,43 +49,22 @@ Item {
 	}
 
         Component.onCompleted: {
-	    if (settings.testsEnabled == false) {
-                gps.positionChanged.connect(updateAltitude);
-	    }
+            gps.positionChanged.connect(updateAltitude);
         }
 
         function updateAltitude() {
 	    var timestamp = gps.timestamp.getUTCMilliseconds() / 1000.0;
-	    var altitude = gps.position.altitude;
+	    var altitude = gps.position.altitude * 3.2808399; // feet
 	    var interval = timestamp - lastTimestamp;
 	    if (interval == 0.0 || interval == timestamp) {
 		interval = 1.0;	// 1sec ensure no division by zero
 		lastAltitude = altitude;  // first call, no change
 	    }
 	    climbRate = (altitude - lastAltitude) / interval;
+            climbRateAngle = climbRate * 0.086;
 	    // save for next calculation
 	    lastTimestamp = timestamp;
 	    lastAltitude = altitude;
-	    updateDisplay();
-        }
-    }
-
-    // Testing - once every interval, change current rate of climb
-
-    Timer {
-        property var climbRateDirection : 1.0
-
-        interval: 100
-        repeat: settings.testsEnabled
-        running: settings.testsEnabled
-
-        onTriggered: {
-            // rotate (climb faster/slower)
-            if (climbRate <= -2000.0 || climbRate >= 2000.0) {
-                climbRateDirection *= -1.0;
-            }
-            climbRate += (42.0 * climbRateDirection);
-            updateDisplay();
         }
     }
 }

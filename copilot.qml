@@ -40,6 +40,20 @@ Page {
             gaggle.objectAppeared.connect(objectAppeared)
         }
 
+        function bearingChanged() {
+            // update the heading irrespective of viewPointGPS
+            gpsPlane.bearing = altimu10.yaw
+        }
+        function positionChanged() {
+            if (viewPointGPS) {
+                viewPoint = gps.position;
+                var hOffset = gpsMap.zoomLevel / 1000.0;
+                var vOffset = gpsMap.zoomLevel / 100.0;
+                viewPoint.latitude -= (vOffset * 0.2);
+                viewPort = QtPositioning.rectangle(viewPoint, hOffset, vOffset);
+            }
+        }
+
         function objectAppeared(ufo) {
             var component1 = Qt.createComponent("Plane.qml", gpsMap)
             var plane = component1.createObject(gpsMap)
@@ -59,20 +73,6 @@ Page {
         }
         function ufoPositionChanged(plane, ufo) {
             plane.position = ufo.position
-        }
-
-        function bearingChanged() {
-            // update the heading irrespective of viewPointGPS
-            gpsPlane.bearing = altimu10.yaw
-        }
-        function positionChanged() {
-            if (viewPointGPS) {
-                viewPoint = gps.position;
-                var hOffset = gpsMap.zoomLevel / 1000.0;
-                var vOffset = gpsMap.zoomLevel / 100.0;
-                viewPoint.latitude -= (vOffset * 0.2);
-                viewPort = QtPositioning.rectangle(viewPoint, hOffset, vOffset);
-            }
         }
 
         // block updates from GPS during interaction

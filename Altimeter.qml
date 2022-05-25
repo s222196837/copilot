@@ -8,20 +8,11 @@ Item {
 
     property var altitude: 0.0
     property var pressure: 28.0
-    property var minPressure: 28.0
     property var angleHand1: 0.0
     property var angleHand2: 0.0
     property var angleFace1: 0.0
     property var angleFace3: 0.0
   
-    function updateDisplay() {
-        var alt = Math.ceil(altitude + 0.5);
-        angleHand1 = altitude * 0.036;
-        angleHand2 = (alt % 1000) * 0.36;
-        angleFace1 = (pressure - minPressure) * 100.0;
-        angleFace3 = altitude * 0.0036;
-    }
-
     Button {
 	background: Rectangle {
 	    id: background
@@ -102,43 +93,23 @@ Item {
 	}
 
         Component.onCompleted: {
-	    if (settings.testsEnabled == false) {
-                gps.positionChanged.connect(updateAltitude);
-                altimu10.pressureChanged.connect(updatePressure);
-	    }
+            gps.positionChanged.connect(updateAltitude);
+            altimu10.pressureChanged.connect(updatePressure);
         }
 
         function updatePressure() {
-            pressure = Math.max(altimu10.pressure, minPressure);
+            // units: pascals to inches of mercury
+            pressure = altimu10.pressure * 0.02953;
         }
 
         function updateAltitude() {
-            altitude = gps.position.altitude;
-	    updateDisplay();
-        }
-    }
-
-    // Testing - once every interval, change altitude and pressure
-
-    Timer {
-	property var altitudeDirection : 1.0
-	property var pressureDirection : 1.0
-
-	interval: 100
-	repeat: settings.testsEnabled
-	running: settings.testsEnabled
-
-	onTriggered: {
-	    // rotate (change altitude and/or pressure)
-	    altitude += (10.0 * altitudeDirection);
-	    if (altitude <= 0.0 || altitude >= 3600.0) {
-		altitudeDirection *= -1.0;
-	    }
-	    pressure += (0.01 * pressureDirection);
-	    if (pressure < 28.0 || pressure > 31.5) {
-		pressureDirection *= -1.0;
-	    }
-            updateDisplay();
+            // units: meters to feet
+            altitude = gps.position.altitude / 3.28084;
+            var alt = Math.ceil(altitude + 0.5);
+            angleHand1 = altitude * 0.036;
+            angleHand2 = (alt % 1000) * 0.36;
+            angleFace1 = (pressure - 28.0) * 100.0;
+            angleFace3 = altitude * 0.0036;
         }
     }
 }

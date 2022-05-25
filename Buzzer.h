@@ -14,7 +14,10 @@ class Buzzer : public QProcess
     Q_PROPERTY(bool longBeep READ getLongBeep WRITE setLongBeep NOTIFY soundEmitted)
 
 public:
-    Buzzer(QString program, MyMetrics *registry = NULL, MySettings *config = NULL, bool debug = false);
+    Buzzer(QString program,
+	   MyMetrics *registry = NULL,
+	   MySettings *config = NULL,
+	   bool debug = false);
     ~Buzzer();
 
     void start();
