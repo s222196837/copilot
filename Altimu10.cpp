@@ -41,10 +41,15 @@ void
 Altimu10::start()
 {
     // prepare memory mapped metric pointers for live updating
-    temperaturep = metrics->mapf("altimu10.temperature");
-    pressurep = metrics->mapf("altimu10.pressure");
-    errors = metrics->map("altimu10.errors");
-    count = metrics->map("altimu10.count");
+    if (metrics) {
+	temperaturep = metrics->mapf("altimu10.temperature");
+	pressurep = metrics->mapf("altimu10.pressure");
+	errors = metrics->map("altimu10.errors");
+	count = metrics->map("altimu10.count");
+    } else {
+	temperaturep = pressurep = &MyMetrics::unused.f;
+	errors = count = &MyMetrics::unused.ull;
+    }
 
     if (settings && settings->testsEnabled()) {
 	shortTimer = startTimer(515);   // 0.5 seconds
@@ -70,14 +75,11 @@ Altimu10::tryRead()
 	    fprintf(stderr, "ALTIMU10: %s", (const char *)bytes.constData());
 
 	if (parse(bytes.constData()) == false) {
-	    if (metrics)
-		(*errors)++;
+	    (*errors)++;
 	} else {
-	    if (metrics) {
-		(*temperaturep) = temperature;
-		(*pressurep) = pressure;
-		(*count)++;
-	    }
+	    (*temperaturep) = temperature;
+	    (*pressurep) = pressure;
+	    (*count)++;
 	}
     }
 }

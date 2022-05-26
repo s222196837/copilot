@@ -59,6 +59,7 @@ void TestProximity::checkProximityWithoutOthers()
 
     TestAircraft central("./flying-object-central");
     central.start();
+    QTest::qWait(100);
 
     // check that 0 aircraft appeared
     QCOMPARE(planeSpy.count(), 0);
@@ -86,6 +87,8 @@ void TestProximity::checkProximityWithOthers()
 
     TestAircraft jim("./flying-object-jim");
     jim.start();
+
+    QTest::qWait(100);
 
     // check that 4 aircraft appeared
     QCOMPARE(planeSpy.count(), 4);

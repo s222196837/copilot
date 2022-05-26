@@ -2,6 +2,8 @@
 
 #define COPILOT_CLUSTER	42
 
+pmAtomValue MyMetrics::unused;
+
 MyMetrics::MyMetrics(): QObject(), enabled(false), item(0), mapping(0)
 {
     metrics = mmv_stats_registry("copilot", COPILOT_CLUSTER, MMV_FLAG_PROCESS);

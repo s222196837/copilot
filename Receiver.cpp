@@ -17,9 +17,13 @@ Receiver::Receiver(MyMetrics *registry, MySettings *config, bool debug):
 void
 Receiver::start(void)
 {
-    count = metrics->map("receiver.count");
-    errors = metrics->map("receiver.errors");
-    corrupt = metrics->map("receiver.corrupt");
+    if (metrics) {
+	count = metrics->map("receiver.count");
+	errors = metrics->map("receiver.errors");
+	corrupt = metrics->map("receiver.corrupt");
+    } else {
+	count = errors = corrupt = &MyMetrics::unused.ull;
+    }
 
     if (settings) {
 	groupAddress4 = QHostAddress(settings->proximityIPv4());
@@ -85,27 +89,23 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
     static size_t size;
 
     if (length > 0) {
-	if (metrics)
-	    (*count)++;
+	(*count)++;
     } else {
-	if (metrics)
-	    (*errors)++;
+	(*errors)++;
     }
 
     if (length < sizeof(IdentifiedFlyingObject)) {
 	if (diagnostics)
 	    fprintf(stderr, "Bad UFO packet length received: %zu < %zu\n",
 		    length, sizeof(IdentifiedFlyingObject));
-	if (metrics)
-	    (*corrupt)++;
+	(*corrupt)++;
 	return;
     }
     if (memcmp(ufo->magic, "UFOP", 4) != 0) {
 	if (diagnostics)
 	    fprintf(stderr, "Bad UFO packet magic received: %c%c%c%c\n",
 		    ufo->magic[0], ufo->magic[1], ufo->magic[2], ufo->magic[3]);
-	if (metrics)
-	    (*corrupt)++;
+	(*corrupt)++;
 	return;
     }
 
@@ -135,8 +135,7 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
 	    fprintf(stderr, "Bad UFO packet length received: %u/%u vs %zu\n",
 		    ufo->length1, ufo->length2,
 		    length - sizeof(IdentifiedFlyingObject));
-	if (metrics)
-	    (*corrupt)++;
+	(*corrupt)++;
 	return;
     }
 
@@ -145,8 +144,7 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
 	    fprintf(stderr, "Bad UFO identity length received: %u vs %zu\n",
 		    object->identityLength,
 		    length - sizeof(IdentifiedFlyingObject));
-	if (metrics)
-	    (*corrupt)++;
+	(*corrupt)++;
 	return;
     }
 
@@ -155,8 +153,7 @@ Receiver::decodeFlyingObject(QByteArray &message, size_t length)
 	if (diagnostics)
 	    fprintf(stderr, "Bad UFO packet identity terminal (%c)\n",
 		    ufo->identity[length - sizeof(IdentifiedFlyingObject)]);
-	if (metrics)
-	    (*corrupt)++;
+	(*corrupt)++;
 	return;
     }
 

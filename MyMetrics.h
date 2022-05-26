@@ -24,12 +24,14 @@ public:
     uint64_t *map(const char *);
     float *mapf(const char *);
 
+    // used as fallback when instrumentation disabled
+    static pmAtomValue	unused;
+
 private:
     bool		enabled;
     int			item;	// next available metric itemID
     void		*mapping;	// base of mmap content
     mmv_registry_t	*metrics;	// table of all metrics
-    pmAtomValue		unused;	// accessed if metrics disabled
 };
 
 #endif // MYMETRICS_H

@@ -33,8 +33,12 @@ void
 Buzzer::start()
 {
     // prepare memory mapped metric pointers for live updating
-    errors = metrics->map("battery.errors");
-    count = metrics->map("battery.count");
+    if (metrics) {
+	errors = metrics->map("buzzer.errors");
+	count = metrics->map("buzzer.count");
+    } else {
+	count = errors = &MyMetrics::unused.ull;
+    }
 
     QProcess::start(command, QStringList());
 }
@@ -42,7 +46,7 @@ Buzzer::start()
 void
 Buzzer::errorOccurred(QProcess::ProcessError error)
 {
-    if (error != QProcess::ReadError &&	metrics)
+    if (error != QProcess::ReadError)
 	(*errors)++;
 }
 
@@ -106,8 +110,7 @@ Buzzer::sendBeep(bool quick)
     if (diagnostics)
 	fprintf(stderr, "BUZZER: %s", buffer);
 
-    if (metrics)
-	(*count)++;
+    (*count)++;
 
     emit soundEmitted();
 }

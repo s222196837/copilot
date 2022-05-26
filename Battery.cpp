@@ -27,9 +27,15 @@ void
 Battery::start()
 {
     // prepare memory mapped metric pointers for live updating
-    percent = metrics->mapf("battery.charge");
-    errors = metrics->map("battery.errors");
-    count = metrics->map("battery.count");
+    if (metrics) {
+	percent = metrics->mapf("battery.charge");
+	errors = metrics->map("battery.errors");
+	count = metrics->map("battery.count");
+    } else {
+	percent = &MyMetrics::unused.f;
+	errors = &MyMetrics::unused.ull;
+	count = &MyMetrics::unused.ull;
+    }
 
     QProcess::start(command, QStringList());
 }
@@ -61,7 +67,7 @@ Battery::parse(const char *line)
     int newcharge;
 
     int count = sscanf(line, "%15s %d %15s %15s\n",
-		&newstatus[0], &newcharge, &newpwin[1], &newpwin5v[2]);
+		newstatus, &newcharge, newpwin, newpwin5v);
 
     if (count == 4) {
 	newvalid = (strcmp(newstatus, "NO_ERROR") == 0);
@@ -70,8 +76,7 @@ Battery::parse(const char *line)
 	    emit statusChanged();
 	}
 	if (charge != newcharge) {
-	    if (metrics)
-		(*percent) = newcharge;
+	    (*percent) = newcharge;
 	    charge = newcharge;
 	    emit chargeChanged();
 	}

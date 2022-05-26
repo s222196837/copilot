@@ -55,9 +55,15 @@ void
 GPS::start()
 {
     // prepare memory mapped metric pointers for live updating
-    altitude = metrics->mapf("gps.altitude");
-    errors = metrics->map("gps.errors");
-    count = metrics->map("gps.count");
+    if (metrics) {
+	altitude = metrics->mapf("gps.altitude");
+	errors = metrics->map("gps.errors");
+	count = metrics->map("gps.count");
+    } else {
+	altitude = &MyMetrics::unused.f;
+	errors = &MyMetrics::unused.ull;
+	count = &MyMetrics::unused.ull;
+    }
 
     if (settings && settings->testsEnabled()) {
 	shortTimer = startTimer(500);	// 0.5 seconds
@@ -72,7 +78,6 @@ void
 GPS::tryRead()
 {
     while (canReadLine()) {
-	bool success;
 	QByteArray line = readLine();
 	const char *bytes = (const char *)line.constData();
 
@@ -85,13 +90,10 @@ GPS::tryRead()
 
 	if (gpsSource->parsePosInfoFromNmeaData(bytes, line.length(),
 			&info, &success) == false) {
-	    if (metrics)
-		(*errors)++;
+	    (*errors)++;
 	} else {
-	    if (metrics) {
-		(*altitude) = info.coordinate().altitude();
-		(*count)++;
-	    }
+	    (*altitude) = info.coordinate().altitude();
+	    (*count)++;
 	    update();
 	}
     }

@@ -42,8 +42,12 @@ Transmitter::~Transmitter()
 void
 Transmitter::start(void)
 {
-    count = metrics->map("transmitter.count");
-    errors = metrics->map("transmitter.errors");
+    if (metrics) {
+	count = metrics->map("transmitter.count");
+	errors = metrics->map("transmitter.errors");
+    } else {
+	count = errors = &MyMetrics::unused.ull;
+    }
 
     if (settings) {
 	groupAddress4 = QHostAddress(settings->proximityIPv4());
@@ -103,24 +107,18 @@ Transmitter::sendDatagram(void)
 		    out->identity, myself.identityLength,
 		    sizeof(IdentifiedFlyingObject));
 
-    if (udpSocket4.writeDatagram(broadcast, groupAddress4, port) == broadcast.length()) {
-	if (metrics)
-	    (*count)++;
-    } else {
-	if (metrics)
-	    (*errors)++;
-    }
+    if (udpSocket4.writeDatagram(broadcast, groupAddress4, port) == broadcast.length())
+	(*count)++;
+    else
+	(*errors)++;
 
     if (udpSocket6.state() != QAbstractSocket::BoundState)
 	return;
 
-    if (udpSocket6.writeDatagram(broadcast, groupAddress6, port) == broadcast.length()) {
-	if (metrics)
-	    (*count)++;
-    } else {
-	if (metrics)
-	    (*errors)++;
-    }
+    if (udpSocket6.writeDatagram(broadcast, groupAddress6, port) == broadcast.length())
+	(*count)++;
+    else
+	(*errors)++;
 }
 
 void
