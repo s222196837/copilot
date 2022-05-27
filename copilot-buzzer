@@ -25,7 +25,7 @@ def limit(cycle):
     return cycle
 
 
-def buzz(interval, volume = 60.0):
+def buzz(interval, volume):
     """ Emit the sound requested """
     #print("interval: %.2f volume: %.1f\n" % (interval, volume))
 
@@ -47,7 +47,7 @@ try:
             if len(sys.argv) > 2:
                 volume = float(sys.argv[2])
             else:
-                volume = None
+                volume = 30.0
 
             buzz(delta, volume)
 
