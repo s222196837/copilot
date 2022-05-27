@@ -63,6 +63,9 @@ main(int argc, char *argv[])
             &gaggle, &FlyingObjects::updateFlyingObject);
     gaggle.connect(&gaggle, &FlyingObjects::alarm, &buzzer, &Buzzer::alarm);
 
+    // connect the GPS and buzzer for variometer (beep, beep, beep)
+    gps.connect(&gps, &GPS::updatedClimbRate, &buzzer, &Buzzer::vario);
+
     // instrumentation is available from now
     metrics.start();
 

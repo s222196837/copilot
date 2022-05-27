@@ -19,12 +19,13 @@ public:
 
 GPS::GPS(QString program, MyMetrics *registry, MySettings *config, bool debug):
 	settings(config), diagnostics(debug), success(false), command(program),
-	latitudeDelta(0), longitudeDelta(0), altitudeDelta(0),
-	shortTimer(-1), longTimer(-1)
+	savedTimestamp(0.0), savedAltitude(0.0), longTimer(-1), shortTimer(-1),
+	latitudeDelta(0), longitudeDelta(0), altitudeDelta(0)
 {
     gpsSource = new GpsSource();
 
     if ((metrics = registry) != NULL) {
+	metrics->addf("gps.climbrate", "most recent rate of climb");
 	metrics->addf("gps.altitude", "most recent altitude sample");
 	metrics->add("gps.errors", "number of lines of bad GPS data");
 	metrics->add("gps.count", "successfully parsed NMEA strings");
@@ -56,11 +57,13 @@ GPS::start()
 {
     // prepare memory mapped metric pointers for live updating
     if (metrics) {
-	altitude = metrics->mapf("gps.altitude");
+	climbrate = metrics->mapf("gps.climbrate");
+	altitudep = metrics->mapf("gps.altitude");
 	errors = metrics->map("gps.errors");
 	count = metrics->map("gps.count");
     } else {
-	altitude = &MyMetrics::unused.f;
+	climbrate = &MyMetrics::unused.f;
+	altitudep = &MyMetrics::unused.f;
 	errors = &MyMetrics::unused.ull;
 	count = &MyMetrics::unused.ull;
     }
@@ -92,7 +95,6 @@ GPS::tryRead()
 			&info, &success) == false) {
 	    (*errors)++;
 	} else {
-	    (*altitude) = info.coordinate().altitude();
 	    (*count)++;
 	    update();
 	}
@@ -102,7 +104,33 @@ GPS::tryRead()
 void
 GPS::update()
 {
-    emit updatedPosition(info.timestamp(), info.coordinate());
+    QDateTime currentTimestamp = info.timestamp();
+    QGeoCoordinate coordinate = info.coordinate();
+    double currentAltitude = coordinate.altitude();
+    double timestamp = currentTimestamp.toMSecsSinceEpoch() / 1000.0; // secs
+    double altitude = currentAltitude * 3.2808399; // feet, aviation standard
+    double interval = timestamp - savedTimestamp;
+    double climbRate;
+
+    if (interval == 0.0 || interval == timestamp) {
+	interval = 1.0;  // 1 sec: preventing division by zero
+	savedAltitude = altitude;  // first call, so no change
+    }
+
+    // calculate rate of climb in feet per second
+    climbRate = (altitude - savedAltitude) / interval;
+
+    // save for next calculation
+    savedTimestamp = timestamp;
+    savedAltitude = altitude;
+
+    // update metrics with most recent values
+    (*altitudep) = currentAltitude;
+    (*climbrate) = climbRate;
+
+    emit updatedPosition(currentTimestamp, coordinate);
+    emit updatedClimbRate(climbRate);
+
     emit positionChanged();
 }
 

@@ -28,6 +28,7 @@ public:
 
 signals:
     void updatedPosition(QDateTime, QGeoCoordinate);
+    void updatedClimbRate(double);
     void positionChanged();
 
 protected:
@@ -44,16 +45,21 @@ private:
     bool success; // was previous parsing attempt successful
     QString command;
 
+    // climb rate calculation
+    double savedTimestamp;
+    double savedAltitude;
+
     // internal tests
+    int longTimer;
+    int shortTimer;
     int latitudeDelta;
     int longitudeDelta;
     int altitudeDelta;
-    int shortTimer;
-    int longTimer;
 
     // instrumentation
     MyMetrics *metrics;
-    float *altitude;	// most recent sample
+    float *climbrate;	// most recently calculated
+    float *altitudep;	// most recently sampled
     uint64_t *errors;	// bad input counter
     uint64_t *count;	// success counter
 };

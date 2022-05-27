@@ -12,6 +12,7 @@ class Buzzer : public QProcess
     Q_PROPERTY(bool enabled READ getEnabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool fastBeep READ getFastBeep WRITE setFastBeep NOTIFY soundEmitted)
     Q_PROPERTY(bool longBeep READ getLongBeep WRITE setLongBeep NOTIFY soundEmitted)
+    Q_PROPERTY(double intensity READ getIntensity WRITE setIntensity NOTIFY intensityChanged)
 
 public:
     Buzzer(QString program,
@@ -30,15 +31,19 @@ public:
     void setFastBeep(bool beep);
     bool getLongBeep() { return longBeep; }
     void setLongBeep(bool beep);
+    double getIntensity() { return intensity; }
+    void setIntensity(double rate);
 
 public slots:
     void alarm();
+    void vario(double);
     void updateAudibleAlarm();
 
 signals:
+    void soundEmitted();
     void volumeChanged();
     void enabledChanged();
-    void soundEmitted();
+    void intensityChanged();
 
 protected:
     void sendBeep(bool);
@@ -53,11 +58,13 @@ private:
     MySettings *settings;
     bool diagnostics;	// output debugging information
     bool audibleAlarm;
+    double intensity;
     QString command;
 
     MyMetrics *metrics;
+    uint64_t *alarms;
+    uint64_t *varios;
     uint64_t *errors;
-    uint64_t *count;
 };
 
 #endif // BUZZER_H
