@@ -14,7 +14,6 @@ Page {
     property variant viewPointGPS: true
     property variant viewPoint: torquay
     property variant viewPort: QtPositioning.rectangle(viewPoint, 0.008, 0.08)
-    property variant ufoIndex: 0        // between 0-3, used for avatar
 
     Map {
         id: gpsMap
@@ -58,21 +57,28 @@ Page {
             var component1 = Qt.createComponent("Plane.qml", gpsMap)
             var plane = component1.createObject(gpsMap)
             plane.ufo = ufo
+            plane.ico = 'other'
             plane.pilot = ufo.name
             plane.bearing = ufo.bearing
             plane.coordinate = ufo.coordinate
-            plane.avatar = 'pointer' + ufoIndex
-            ufoIndex = ufoIndex % 4; // prepare next avatar
             gpsMap.addMapItem(plane)
-            ufo.bearingChanged.connect(ufoBearingChanged, plane)
-            ufo.positionChanged.connect(ufoPositionChanged, plane)
+            ufo.nameChanged.connect(ufoNameChanged, plane, ufo)
+            ufo.statusChanged.connect(ufoStatusChanged, plane, ufo)
+            ufo.bearingChanged.connect(ufoBearingChanged, plane, ufo)
+            ufo.positionChanged.connect(ufoPositionChanged, plane, ufo)
         }
 
+        function ufoNameChanged(plane, ufo) {
+            plane.name = ufo.name
+        }
+        function ufoStatusChanged(plane, ufo) {
+            plane.ico = ufo.status
+        }
         function ufoBearingChanged(plane, ufo) {
-            plane.bearing = ufo.yaw
+            plane.bearing = ufo.bearing
         }
         function ufoPositionChanged(plane, ufo) {
-            plane.position = ufo.position
+            plane.coordinate = ufo.coordinate
         }
 
         // block updates from GPS during interaction

@@ -42,6 +42,7 @@ void
 FlyingObjects::updatedProximityDistance(int meters)
 {
     distance = meters;
+    closing = meters * 2;
 }
 
 void
@@ -51,17 +52,30 @@ FlyingObjects::proximityCheck()
 
     // iterate the hash and check how close every flying object is
     foreach (FlyingObject *object, others) {
-	double incoming = object->altitude();
-	if (fabs(altitude - incoming) > distance)
+	double incoming = fabs(altitude - object->altitude());
+
+	// completely too high/low/faraway
+	if (incoming > closing ||
+	    location.distanceTo(object->coordinate()) > closing) {
+	    object->setStatus("other");
 	    continue;
-	if (location.distanceTo(object->coordinate()) > distance)
-	    continue;
-	emit objectTooClose(object);
-	emit alarm();
+	}
+
+	// close - check whether warning or alarming
+	if (incoming > distance ||
+	    location.distanceTo(object->coordinate()) > distance) {
+	    // closing in - warning
+	    object->setStatus("close");
+	} else {
+	    // alarmingly close now
+	    object->setStatus("alarm");
+	    emit alarm();
+	}
     }
 }
 
-FlyingObject::FlyingObject(QUuid uuid) : QObject(), myName(), myTimestamp(0),
+FlyingObject::FlyingObject(QUuid uuid) : QObject(),
+	myName(""), myStatus("other"), myTimestamp(0),
 	myLatitude(0), myLongitude(0), myAltitude(0), myHeading(0), myUuid(uuid)
 {
 }
@@ -81,16 +95,29 @@ FlyingObject::setCoordinate(const QGeoCoordinate &coordinate)
 }
 
 void
-FlyingObject::update(QString name, quint64 timestamp, double heading,
-	double latitude, double longitude, double altitude, bool quiet)
+FlyingObject::setName(const QString &name)
 {
-    myTimestamp = timestamp;
-
     if (myName != name) {
 	myName = name;
-	if (!quiet)
-	    emit nameChanged();
+	emit nameChanged();
     }
+}
+
+void
+FlyingObject::setStatus(const QString &status)
+{
+    if (myStatus != status) {
+	myStatus = status;
+	emit statusChanged();
+    }
+}
+
+void
+FlyingObject::update(QString name, quint64 timestamp, double heading,
+	double latitude, double longitude, double altitude, bool first)
+{
+    myTimestamp = timestamp;
+    setName(name);
 
     bool updatedPosition = false;
     if (myLatitude != latitude) {
@@ -106,12 +133,12 @@ FlyingObject::update(QString name, quint64 timestamp, double heading,
 	updatedPosition = true;
     }
 
-    if (updatedPosition && !quiet)
+    if (updatedPosition && !first)
 	emit positionChanged();
 
     if (myHeading != heading) {
 	myHeading = heading;
-	if (!quiet)
+	if (!first)
 	    emit bearingChanged();
     }
 }

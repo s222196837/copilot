@@ -12,11 +12,10 @@
         <file>Settings.qml</file>
 	<file>Status.qml</file>
 	<file>VerticalSpeed.qml</file>
-	<file>images/pointer.png</file>
-	<file>images/pointer0.png</file>
-	<file>images/pointer1.png</file>
-	<file>images/pointer2.png</file>
-	<file>images/pointer3.png</file>
+	<file>images/pointer-local.png</file>
+	<file>images/pointer-other.png</file>
+	<file>images/pointer-close.png</file>
+	<file>images/pointer-alarm.png</file>
 	<file>images/ai/ai.svg</file>
 	<file>images/ai/ai_back.svg</file>
 	<file>images/ai/ai_case.svg</file>

@@ -38,11 +38,13 @@ class FlyingObject : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QGeoCoordinate coordinate READ coordinate WRITE setCoordinate NOTIFY positionChanged)
     Q_PROPERTY(double bearing READ bearing WRITE setBearing NOTIFY bearingChanged)
 
 signals:
     void nameChanged();
+    void statusChanged();
     void positionChanged();
     void bearingChanged();
 
@@ -52,7 +54,9 @@ public:
     double altitude() { return myAltitude; }
 
     const QString name() const { return myName; }
-    void setName(const QString &n) { myName = n; }
+    void setName(const QString &n);
+    const QString status() const { return myStatus; }
+    void setStatus(const QString &s);
     const QGeoCoordinate coordinate() const;
     void setCoordinate(const QGeoCoordinate &);
     double bearing() { return myHeading; }
@@ -60,6 +64,7 @@ public:
 
 private:
     QString		myName;
+    QString		myStatus;
     quint64		myTimestamp;
     double		myLatitude;
     double		myLongitude;
@@ -85,14 +90,14 @@ public slots:
 
 signals:
     void objectAppeared(FlyingObject *);
-    void objectTooClose(FlyingObject *);
     void alarm();
 
 private:
     QHash<QUuid, FlyingObject*> others;
     QGeoCoordinate location;  // centre
     bool diagnostics;	// verbose mode
-    int distance;	// alarm meters
+    int distance;	// alarm (meters)
+    int closing;	// close (meters)
 };
 
 #endif // FLYINGOBJECTS_H

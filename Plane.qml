@@ -4,8 +4,8 @@ import QtLocation 5.15
 MapQuickItem {
     id: plane
     property variant ufo
-    property string avatar: "pointer"
     property string pilot: ""
+    property string ico: "local"
     property int bearing: 0
 
     anchorPoint.x: image.width/2
@@ -18,7 +18,7 @@ MapQuickItem {
             Image {
                 id: image
                 rotation: bearing
-                source: "qrc:/images/" + avatar + ".png"
+                source: "qrc:/images/pointer-" + ico + ".png"
             }
             Rectangle {
                 id: bubble
