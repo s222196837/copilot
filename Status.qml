@@ -63,36 +63,4 @@ Label {
         settings.soundEnabledChanged.connect(refreshStatusBar)
         refreshStatusBar()
     }
-
-    // Testing - once every interval, change status of all elements
-
-    Timer {
-        property var chargeDirection : 1
-        property var volumeDirection : 1
-        property var count : 1
-
-        interval: 1000
-
-        repeat: settings.testsEnabled
-        running: settings.testsEnabled
-
-	onTriggered: {
-	    if (++count % 10 == 0) {
-		gpsEnabled = !gpsEnabled;
-		wifiEnabled = !wifiEnabled;
-	    }
-
-	    // change battery usage charge
-	    charge += (1 * chargeDirection);
-	    if (charge <= 0 || charge >= 5) {
-		chargeDirection *= -1;
-	    }
-
-	    // change sound volume
-	    volume += (1 * volumeDirection);
-	    if (volume < 0 || volume > 100) {
-		volumeDirection *= -1;
-	    }
-	}
-    }
 }

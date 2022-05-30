@@ -37,7 +37,12 @@ Battery::start()
 	count = &MyMetrics::unused.ull;
     }
 
-    QProcess::start(command, QStringList());
+    if (settings && settings->testsEnabled()) {
+	startTimer(10000);	// 10 seconds
+    } else {
+	// start the battery monitoring process
+	QProcess::start(command, QStringList());
+    }
 }
 
 void
@@ -93,4 +98,26 @@ Battery::parse(const char *line)
     }
 	
     return success;
+}
+
+void
+Battery::timerEvent(QTimerEvent *event)
+{
+    static int chargeDirection;
+
+    (void)event;	// only one event
+
+    if (!chargeDirection) {	// first time
+	chargeDirection = 1;
+	status = true;
+        emit statusChanged();
+    }
+    charge += (1 * chargeDirection);
+    emit chargeChanged();
+
+    if (charge < 0 || charge > 100) {
+	chargeDirection *= -1;
+	powered = chargeDirection > 1;
+	emit poweredChanged();
+    }
 }

@@ -34,6 +34,7 @@ signals:
 protected:
     void tryRead();
     bool parse(const char *);
+    void timerEvent(QTimerEvent*) override;
 
 private:
     int charge;
