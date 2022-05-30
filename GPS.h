@@ -3,10 +3,33 @@
 
 #include <QProcess>
 #include <QGeoPositionInfo>
+#include <QRandomGenerator>
 #include "MyMetrics.h"
 #include "MySettings.h"
 
 class GpsSource;
+
+class RandomMovement
+{
+public:
+    RandomMovement();
+
+    void updateDirection();
+    void updatePosition();
+
+    const QGeoCoordinate coordinate() const { return coord; }
+    void setCoordinate(const QGeoCoordinate c) { coord = c; }
+    float getHeading() { return heading; }
+
+private:
+    QRandomGenerator *random;
+    QGeoCoordinate coord;
+    int latitudeDelta;
+    int longitudeDelta;
+    int altitudeDelta;
+    int headingDelta;
+    float heading;
+};
 
 class GPS: public QProcess
 {
@@ -49,12 +72,10 @@ private:
     double savedTimestamp;
     double savedAltitude;
 
-    // internal tests
+    // internal testing
     int longTimer;
     int shortTimer;
-    int latitudeDelta;
-    int longitudeDelta;
-    int altitudeDelta;
+    RandomMovement test;
 
     // instrumentation
     MyMetrics *metrics;

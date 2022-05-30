@@ -1,5 +1,4 @@
 #include <QNmeaPositionInfoSource>
-#include <QRandomGenerator>
 #include <QTimerEvent>
 #include <math.h>
 #include "GPS.h"
@@ -19,8 +18,7 @@ public:
 
 GPS::GPS(QString program, MyMetrics *registry, MySettings *config, bool debug):
 	settings(config), diagnostics(debug), success(false), command(program),
-	savedTimestamp(0.0), savedAltitude(0.0), longTimer(-1), shortTimer(-1),
-	latitudeDelta(0), longitudeDelta(0), altitudeDelta(0)
+	savedTimestamp(0.0), savedAltitude(0.0), longTimer(-1), shortTimer(-1)
 {
     gpsSource = new GpsSource();
 
@@ -32,7 +30,7 @@ GPS::GPS(QString program, MyMetrics *registry, MySettings *config, bool debug):
     }
 
     if (settings && settings->testsEnabled()) {
-	QGeoCoordinate coordinate(-38.342647, 144.319029, 0);
+	QGeoCoordinate coordinate(-38.342647, 144.319029, 0);	/* home */
 	info.setCoordinate(coordinate);
     } else {
 	connect(this, &QProcess::readyReadStandardOutput, this, &GPS::tryRead);
@@ -128,53 +126,78 @@ GPS::update()
     (*altitudep) = currentAltitude;
     (*climbrate) = climbRate;
 
+    test.setCoordinate(coordinate);
     emit updatedPosition(currentTimestamp, coordinate);
     emit updatedClimbRate(climbRate);
-
     emit positionChanged();
+}
+
+//
+// This timer is used in the dynamic testing mode only
+//
+void
+GPS::timerEvent(QTimerEvent *event)
+{
+    // change directions on long timer
+    if (event->timerId() == longTimer) {
+	test.updateDirection();
+    }
+    // change location on short timer
+    else {
+	test.updatePosition();
+	info.setCoordinate(test.coordinate());
+	info.setTimestamp(QDateTime::currentDateTime());
+	update();
+    }
 }
 
 //
 // Generate test data on the fly and inject it into the system
 //
 
+RandomMovement::RandomMovement():
+	random(QRandomGenerator::global()),
+	coord(-38.342647, 144.319029, 0), /* fixed start */
+	latitudeDelta(0), longitudeDelta(0), altitudeDelta(0), headingDelta(0)
+{
+    updateDirection();
+    updatePosition();
+    heading = (random->generate() % 360);		// { 0 -> 359 }
+}
+
+void
+RandomMovement::updateDirection()
+{
+    latitudeDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
+    longitudeDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
+    altitudeDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
+    headingDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
+}
+
 #define RADIUS		6378137.0
 #define DELTA_DISTANCE	1.5	// incremental distance change
 
 void
-GPS::timerEvent(QTimerEvent *event)
+RandomMovement::updatePosition()
 {
-    QRandomGenerator *random = QRandomGenerator::global();
+    double da, dn, de, dlat, dlon;
 
-    // change directions on long timer
-    if (event->timerId() == longTimer) {
-	latitudeDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
-	longitudeDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
-	altitudeDelta = (random->generate() % 3) - 1;	// { -1, 0, 1 }
-    }
-    // change location on short timer
-    else {
-	double da, dn, de, dlat, dlon;
-	QGeoCoordinate c = info.coordinate();
+    dn = DELTA_DISTANCE * latitudeDelta;
+    de = DELTA_DISTANCE * longitudeDelta;
+    dlat = dn / RADIUS;
+    dlon = de / (RADIUS * cos(M_PI * coord.latitude()/180.0));
+    dlat *= 180.0 / M_PI;
+    dlon *= 180.0 / M_PI;
+    coord.setLatitude(coord.latitude() + dlat);
+    coord.setLongitude(coord.longitude() + dlon);
 
-	dn = DELTA_DISTANCE * latitudeDelta;
-	de = DELTA_DISTANCE * longitudeDelta;
-	dlat = dn / RADIUS;
-	dlon = de / (RADIUS * cos(M_PI * c.latitude()/180.0));
-	dlat *= 180.0 / M_PI;
-	dlon *= 180.0 / M_PI;
-	c.setLatitude(c.latitude() + dlat);
-	c.setLongitude(c.longitude() + dlon);
+    if (coord.altitude() > 3000)  // enforce a ceiling (meters)
+	altitudeDelta = -1.0;
+    da = (random->generate() % 25);  // change climb rate
+    da = fabs(DELTA_DISTANCE * da * altitudeDelta);
+    coord.setAltitude(coord.altitude() + da);
 
-	if (c.altitude() > 3000)	// enforce a ceiling
-	    altitudeDelta = -1.0;
-	da = (random->generate() % 25); // change climb rate
-	da = fabs(DELTA_DISTANCE * da * altitudeDelta);
-	c.setAltitude(c.altitude() + da);
-
-	info.setCoordinate(c);
-	info.setTimestamp(QDateTime::currentDateTime());
-
-	update();
-    }
+    heading += headingDelta;
+    if (heading < 0 || heading >= 360)
+	heading = random->generate() % 360;
 }

@@ -3,7 +3,8 @@
 #include <sys/time.h>
 
 Transmitter::Transmitter(MyMetrics *registry, MySettings *config, bool debug):
-	QObject(nullptr), diagnostics(debug), settings(config), port(UFO_PORT),
+	QObject(nullptr), diagnostics(debug), longTimer(-1), shortTimer(-1),
+	settings(config), port(UFO_PORT),
 	groupAddress4(QStringLiteral(UFO_GROUP_IPv4)),
 	groupAddress6(QStringLiteral(UFO_GROUP_IPv6))
 {
@@ -64,6 +65,11 @@ Transmitter::start(void)
 	fprintf(stderr, "on port %d\n", port);
     }
 
+    if (settings && settings->testsEnabled()) {
+	shortTimer = startTimer(505);   // 0.5 seconds
+	longTimer = startTimer(2525);   // 2.5 seconds
+    }
+
     updateIdentity();	// initialize, in the absense of any signals
 
     connect(&timer, &QTimer::timeout, this, &Transmitter::sendDatagram);
@@ -76,6 +82,10 @@ Transmitter::start(void)
 void
 Transmitter::stop(void)
 {
+    if (settings && settings->testsEnabled()) {
+	killTimer(shortTimer);
+	killTimer(longTimer);
+    }
     timer.stop();
     udpSocket4.close();
     udpSocket6.close();
@@ -199,4 +209,22 @@ Transmitter::encodeFlyingObject(void)
     qToLittleEndian(myself.altitude, &out->altitude);
     qToLittleEndian(myself.heading, &out->heading);
     qToLittleEndian(myself.length2, &out->length2);
+}
+
+//
+// This timer is used in the dynamic testing mode only
+//
+void
+Transmitter::timerEvent(QTimerEvent *event)
+{
+    // change directions on long timer
+    if (event->timerId() == longTimer) {
+        test.updateDirection();
+    }
+    // change location on short timer
+    else {
+        test.updatePosition();
+	updatedPosition(QDateTime::currentDateTime(), test.coordinate());
+	updatedHeading(test.getHeading());
+    }
 }

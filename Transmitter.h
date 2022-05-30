@@ -32,11 +32,24 @@ private slots:
     void setTimeToLive(int newTtl);
     void sendDatagram(void);
 
+protected:
+    void timerEvent(QTimerEvent*) override;
+
 private:
     void encodeFlyingObject(void);
     void updateIdentity();
 
     bool diagnostics;	// output debugging information
+
+    // internal tests
+    int longTimer;
+    int shortTimer;
+    RandomMovement test;
+
+    // instrumentation
+    MyMetrics *metrics;
+    uint64_t *errors;	/* networking errors on sends */
+    uint64_t *count;	/* successfully sent messages */
 
     MySettings *settings;
     int port;
@@ -45,11 +58,6 @@ private:
     QUdpSocket udpSocket4;
     QUdpSocket udpSocket6;
     QTimer timer;
-
-    MyMetrics *metrics;
-    uint64_t *count;	/* successfully sent messages */
-    uint64_t *errors;	/* networking errors on sends */
-
     QString identity;
     IdentifiedFlyingObject myself; /* location/heading/identity detail */
     QByteArray broadcast;	/* preallocated buffer for broadcasting */
