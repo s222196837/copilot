@@ -58,7 +58,7 @@ Page {
             var component1 = Qt.createComponent("Plane.qml", gpsMap)
             var plane = component1.createObject(gpsMap)
             plane.ufo = ufo
-            plane.ico = 'other'
+            plane.ico = 'close'
             plane.pilot = ufo.name
             plane.bearing = ufo.bearing
             plane.coordinate = ufo.coordinate
