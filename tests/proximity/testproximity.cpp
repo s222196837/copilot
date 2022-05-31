@@ -55,7 +55,7 @@ void TestProximity::checkProximityWithoutOthers()
 {
     FlyingObjects all(true);
     QSignalSpy planeSpy(&all, SIGNAL(objectAppeared(FlyingObject*)));
-    QSignalSpy closeSpy(&all, SIGNAL(objectTooClose(FlyingObject*)));
+    QSignalSpy alarmSpy(&all, SIGNAL(alarm()));
 
     TestAircraft central("./flying-object-central");
     central.start();
@@ -65,7 +65,7 @@ void TestProximity::checkProximityWithoutOthers()
     QCOMPARE(planeSpy.count(), 0);
 
     // check no proximity alerts seen
-    QVERIFY(closeSpy.count() == 0);
+    QVERIFY(alarmSpy.count() == 0);
 
     central.stop();
 }
@@ -74,7 +74,7 @@ void TestProximity::checkProximityWithOthers()
 {
     FlyingObjects all(true);
     QSignalSpy planeSpy(&all, SIGNAL(objectAppeared(FlyingObject*)));
-    QSignalSpy closeSpy(&all, SIGNAL(objectTooClose(FlyingObject*)));
+    QSignalSpy alarmSpy(&all, SIGNAL(alarm()));
 
     TestAircraft central("./flying-object-central");
     central.start();
@@ -94,7 +94,7 @@ void TestProximity::checkProximityWithOthers()
     QCOMPARE(planeSpy.count(), 4);
 
     // check proximity alerts happened
-    QVERIFY(closeSpy.count() > 0);
+    QVERIFY(alarmSpy.count() > 0);
 
     jim.stop();
     kate.stop();

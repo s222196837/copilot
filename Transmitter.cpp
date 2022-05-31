@@ -16,15 +16,6 @@ Transmitter::Transmitter(MyMetrics *registry, MySettings *config, bool debug):
 	metrics->add("transmitter.errors", "networking errors on sends");
     }
 
-    if (config) {
-	connect(config, &MySettings::pilotNameChanged,
-			this, &Transmitter::updateIdentity);
-	connect(config, &MySettings::pilotNicknameChanged,
-			this, &Transmitter::updateIdentity);
-	connect(config, &MySettings::pilotRegistrationChanged,
-			this, &Transmitter::updateIdentity);
-    }
-
     /* Universally Unique ID for this transmitter (one aircraft) */
     hardware = hardware.createUuid();
     QByteArray device = hardware.toRfc4122();
@@ -33,6 +24,16 @@ Transmitter::Transmitter(MyMetrics *registry, MySettings *config, bool debug):
     myself.length1 = myself.length2 = sizeof(IdentifiedFlyingObject);
     memset(&myself.timestamp, 0, sizeof(myself.timestamp));
     memcpy(myself.magic, "UFOP", sizeof(myself.magic));
+
+    if (config) {
+	updateIdentity();	// initialize (before signals)
+	connect(config, &MySettings::pilotNameChanged,
+			this, &Transmitter::updateIdentity);
+	connect(config, &MySettings::pilotNicknameChanged,
+			this, &Transmitter::updateIdentity);
+	connect(config, &MySettings::pilotRegistrationChanged,
+			this, &Transmitter::updateIdentity);
+    }
 }
 
 Transmitter::~Transmitter()
@@ -69,8 +70,6 @@ Transmitter::start(void)
 	shortTimer = startTimer(505);   // 0.5 seconds
 	longTimer = startTimer(2525);   // 2.5 seconds
     }
-
-    updateIdentity();	// initialize, in the absense of any signals
 
     connect(&timer, &QTimer::timeout, this, &Transmitter::sendDatagram);
 
@@ -147,30 +146,27 @@ Transmitter::updatedHeading(float heading)
 }
 
 void
+Transmitter::updateIdentity()
+{
+    QString name, nick, rego;
+    QChar separator = QChar('|');
+
+    name = settings->pilotName();
+    name.remove(separator);
+    nick = settings->pilotNickname();
+    nick.remove(separator);
+    rego = settings->pilotRegistration();
+    rego.remove(separator);
+
+    updatedIdentity(name, nick, rego);
+}
+
+void
 Transmitter::updatedIdentity(QString name, QString nick, QString rego)
 {
     QChar separator = QChar('|');
     identity = name % separator % nick % separator % rego % separator;
-    updateIdentity();
-}
-
-void
-Transmitter::updateIdentity()
-{
-    if (settings) {
-	QString name, nick, rego;
-	QChar separator = QChar('|');
-
-	name = settings->pilotName();
-	name.remove(separator);
-	nick = settings->pilotNickname();
-	nick.remove(separator);
-	rego = settings->pilotRegistration();
-	rego.remove(separator);
-
-	identity = name % separator % nick % separator % rego % separator;
-    }
-
+    
     // keep the final identity string locally in the object
     if (identity.length() >= UFO_MAXID)
 	identity.resize(UFO_MAXID - 1);
@@ -181,7 +177,6 @@ Transmitter::updateIdentity()
     // track the total output length also (ID is the variable part)
     myself.length1 = sizeof(IdentifiedFlyingObject) + myself.identityLength;
     myself.length2 = myself.length1;
-
 }
 
 // Prepare the broadcast buffer with details of this aircraft

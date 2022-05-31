@@ -1,4 +1,4 @@
-SUBDIRS = altimu10 gps battery proximity
+SUBDIRS = altimu10 battery gps pilot proximity
 
 default: $(SUBDIRS)
 	for d in `echo $^ `; do \

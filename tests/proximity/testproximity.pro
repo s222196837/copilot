@@ -5,12 +5,14 @@ INCLUDEPATH += ../..
 
 SOURCES = \
 	  testproximity.cpp \
+	  ../../GPS.cpp \
 	  ../../FlyingObjects.cpp \
 	  ../../Transmitter.cpp \
 	  ../../MyMetrics.cpp \
 	  ../../MySettings.cpp \
 
 HEADERS = \
+	  ../../GPS.h \
 	  ../../FlyingObjects.h \
 	  ../../Transmitter.h \
 	  ../../MyMetrics.h \

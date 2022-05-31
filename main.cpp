@@ -41,8 +41,7 @@ main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QFontDatabase fontDatabase;
-    if (fontDatabase.addApplicationFont(":/fonts/myfontello.ttf") == -1)
-	fprintf(stderr, "%s: Failed to load myfontello.ttf\n", "copilot");
+    fontDatabase.addApplicationFont(":/fonts/myfontello.ttf");
 
     MyMetrics metrics;
     MySettings settings(debug, tests);

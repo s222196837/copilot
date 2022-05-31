@@ -18,10 +18,12 @@ class Transmitter : public QObject
 public:
     Transmitter(MyMetrics *registry = NULL, MySettings *config = NULL, bool debug = false);
     ~Transmitter();
+
     void start();
     void stop();
 
     const QUuid device() const { return hardware; }
+    void updatedSettings(MySettings *config) { settings = config; }
 
 public slots:
     void updatedPosition(QDateTime, QGeoCoordinate);

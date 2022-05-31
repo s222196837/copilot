@@ -26,6 +26,7 @@ Page {
         Plane {
             id: gpsPlane
             coordinate: gps.position
+            z: 10
 
             MouseArea {
                 anchors.fill: parent
@@ -61,24 +62,11 @@ Page {
             plane.pilot = ufo.name
             plane.bearing = ufo.bearing
             plane.coordinate = ufo.coordinate
+            ufo.nameChanged.connect(plane.ufoNameChanged)
+            ufo.statusChanged.connect(plane.ufoStatusChanged)
+            ufo.bearingChanged.connect(plane.ufoBearingChanged)
+            ufo.positionChanged.connect(plane.ufoPositionChanged)
             gpsMap.addMapItem(plane)
-            ufo.nameChanged.connect(ufoNameChanged, plane, ufo)
-            ufo.statusChanged.connect(ufoStatusChanged, plane, ufo)
-            ufo.bearingChanged.connect(ufoBearingChanged, plane, ufo)
-            ufo.positionChanged.connect(ufoPositionChanged, plane, ufo)
-        }
-
-        function ufoNameChanged(plane, ufo) {
-            plane.name = ufo.name
-        }
-        function ufoStatusChanged(plane, ufo) {
-            plane.ico = ufo.status
-        }
-        function ufoBearingChanged(plane, ufo) {
-            plane.bearing = ufo.bearing
-        }
-        function ufoPositionChanged(plane, ufo) {
-            plane.coordinate = ufo.coordinate
         }
 
         // block updates from GPS during interaction

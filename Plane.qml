@@ -3,7 +3,7 @@ import QtLocation 5.15
 
 MapQuickItem {
     id: plane
-    property variant ufo
+    property var ufo: null
     property string pilot: ""
     property string ico: "local"
     property int bearing: 0
@@ -35,6 +35,11 @@ MapQuickItem {
             }
         }
     }
+
+    function ufoNameChanged() { pilot = ufo.name }
+    function ufoStatusChanged() { ico = ufo.status }
+    function ufoBearingChanged() { bearing = ufo.bearing }
+    function ufoPositionChanged() { coordinate = ufo.coordinate }
 
     SequentialAnimation {
         id: planeAnimation

@@ -42,7 +42,7 @@ void
 FlyingObjects::updatedProximityDistance(int meters)
 {
     distance = meters;
-    closing = meters * 2;
+    closing = meters * 10;
 }
 
 void
