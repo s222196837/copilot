@@ -137,13 +137,15 @@ Altimu10::timerEvent(QTimerEvent *event)
 	yawDelta = (random->generate() % 3);
 
 	temperature += (temperatureDelta * temperatureDirection);
-	if (temperature < -60.0 || temperature > 50.0)
+	if (temperature < -10.0 || temperature > 32.0)
 	    temperatureDirection += -1.0;
+	(*temperaturep) = temperature;
 	emit temperatureChanged();
 
 	pressure += (pressureDelta * pressureDirection);
 	if (pressure < 950.0 || pressure > 1050.0)
 	    pressureDirection += -1.0;
+	(*pressurep) = pressure;
 	emit pressureChanged();
     }
     // change values on short timer
